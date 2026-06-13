@@ -176,3 +176,33 @@ a{color:#0f6b9e}
 @keyframes splashOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(1.02) translateY(-20px)}}
 @keyframes ringRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes particleFloat{0%{opacity:0;transform:translateY(0) scale(.5)}30%{opacity:.6}70%{opacity:.4}100%{opacity:0;transform:translateY(-60px) scale(1)}}
+
+/* ===== Manual Overlay ===== */
+.manual-box{max-width:800px;max-height:90vh;display:flex;flex-direction:column;padding:0;overflow:hidden}
+.manual-header{padding:24px 28px 0;flex-shrink:0}
+.manual-header h2{font-size:1.3rem;margin:0;color:#e2e8f0}
+.manual-header p{margin:4px 0 0;font-size:0.85rem}
+.manual-body{overflow-y:auto;padding:8px 28px 24px;flex:1}
+.manual-body h2{font-size:1.15rem;color:#3b82f6;margin:28px 0 12px;padding-bottom:6px;border-bottom:1px solid #334155}
+.manual-body h3{font-size:1rem;color:#cbd5e1;margin:20px 0 8px}
+.manual-body p{margin:8px 0;line-height:1.7}
+.manual-body table{width:100%;border-collapse:collapse;margin:12px 0;font-size:0.88rem}
+.manual-body th,.manual-body td{border:1px solid #334155;padding:6px 10px;text-align:left}
+.manual-body th{background:#1e293b;color:#3b82f6;font-weight:600}
+.manual-body code{background:#1e293b;padding:1px 5px;border-radius:3px;font-size:0.88em;color:#facc15}
+.manual-body ul,.manual-body ol{padding-left:20px}
+.manual-body li{margin:3px 0}
+
+.manual-toc{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:16px 24px;margin:12px 0 20px}
+.manual-toc h3{margin:0 0 8px}
+.manual-toc ol{padding-left:18px}
+.manual-toc li{margin:4px 0;font-size:0.9rem}
+.manual-toc a{color:#93c5fd;text-decoration:none}
+.manual-toc a:hover{color:#60a5fa;text-decoration:underline}
+
+.manual-step{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:14px 20px;margin:12px 0}
+.manual-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#3b82f6;color:#fff;font-weight:700;font-size:0.8rem;margin-right:8px;vertical-align:middle}
+.manual-tip{background:#1e3a5f;border-left:4px solid #3b82f6;padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-size:0.88rem}
+.manual-warn{background:#78350f;border-left:4px solid #f59e0b;padding:10px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-size:0.88rem}
+
+.badge-green{display:inline-block;padding:1px 8px;border-radius:10px;font-size:0.78rem;font-weight:600;background:#166534;color:#86efac}

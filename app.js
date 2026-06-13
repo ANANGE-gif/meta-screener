@@ -614,6 +614,8 @@ function showHelp(){$('helpOverlay').style.display=''}
 function hideHelp(){$('helpOverlay').style.display='none'}
 function showAbout(){$('aboutOverlay').style.display=''}
 function hideAbout(){$('aboutOverlay').style.display='none'}
+function showManual(){$('manualOverlay').style.display=''}
+function hideManual(){$('manualOverlay').style.display='none'}
 
 // === Utilities ===
 function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
