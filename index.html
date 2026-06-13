@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meta分析文献筛选器 Pro</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Splash Screen -->
+<div id="splashScreen">
+  <div class="splash-bg"></div>
+  <div class="splash-particles">
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <div class="splash-center">
+    <div class="splash-ring"></div>
+    <svg class="splash-logo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="glow"><feGaussianBlur stdDeviation="2" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <line x1="35" y1="38" x2="60" y2="60" stroke="url(#lineGrad)" stroke-width="2" opacity="0.7" filter="url(#glow)"/>
+      <line x1="85" y1="38" x2="60" y2="60" stroke="url(#lineGrad)" stroke-width="2" opacity="0.7" filter="url(#glow)"/>
+      <line x1="38" y1="88" x2="60" y2="60" stroke="url(#lineGrad)" stroke-width="2" opacity="0.7" filter="url(#glow)"/>
+      <line x1="82" y1="88" x2="60" y2="60" stroke="url(#lineGrad)" stroke-width="2" opacity="0.7" filter="url(#glow)"/>
+      <line x1="35" y1="38" x2="85" y2="38" stroke="#3b82f6" stroke-width="1.2" opacity="0.3"/>
+      <line x1="38" y1="88" x2="82" y2="88" stroke="#3b82f6" stroke-width="1.2" opacity="0.3"/>
+      <line x1="35" y1="38" x2="38" y2="88" stroke="#3b82f6" stroke-width="1" opacity="0.2"/>
+      <line x1="85" y1="38" x2="82" y2="88" stroke="#3b82f6" stroke-width="1" opacity="0.2"/>
+      <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#60a5fa"/><stop offset="100%" stop-color="#3b82f6"/></linearGradient>
+      <circle cx="60" cy="60" r="16" fill="url(#centerGrad)" filter="url(#glow)"/>
+      <radialGradient id="centerGrad"><stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#0f4c75"/></radialGradient>
+      <circle cx="35" cy="38" r="6" fill="#3b82f6" opacity=".9" filter="url(#glow)"/>
+      <circle cx="85" cy="38" r="6" fill="#3b82f6" opacity=".9" filter="url(#glow)"/>
+      <circle cx="38" cy="88" r="6" fill="#3b82f6" opacity=".9" filter="url(#glow)"/>
+      <circle cx="82" cy="88" r="6" fill="#3b82f6" opacity=".9" filter="url(#glow)"/>
+      <text x="60" y="65" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">M</text>
+    </svg>
+    <h1 class="splash-title">Meta分析文献筛选器 Pro</h1>
+    <p class="splash-version">v2.0 · 科研辅助工具</p>
+    <p class="splash-sub">系统综述与 Meta 分析文献筛选平台</p>
+  </div>
+  <div class="splash-progress">
+    <div class="splash-progress-bar"></div>
+  </div>
+  <p class="splash-footer">Powered by Local Browser · 数据安全本地存储</p>
+</div>
+
+<!-- Auth Overlay -->
+<div id="authOverlay" class="overlay">
+  <div class="overlay-box auth-box">
+    <div class="auth-icon">
+      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
+        <circle cx="24" cy="24" r="22" fill="none" stroke="#3b82f6" stroke-width="2" opacity=".3"/>
+        <circle cx="24" cy="24" r="15" fill="none" stroke="#0f6b9e" stroke-width="2.5" stroke-dasharray="4 3"/>
+        <circle cx="24" cy="24" r="7" fill="#0f6b9e"/>
+        <text x="24" y="28" text-anchor="middle" fill="#fff" font-size="9" font-weight="bold">M</text>
+      </svg>
+    </div>
+    <h2>Meta分析文献筛选器 Pro</h2>
+
+    <!-- ===== 主入口：登录 / 注册 ===== -->
+    <div class="auth-tabs">
+      <button type="button" class="auth-tab active" id="tabLoginBtn" onclick="switchAuthTab('login')">登录</button>
+      <button type="button" class="auth-tab" id="tabRegisterBtn" onclick="switchAuthTab('register')">注册</button>
+    </div>
+
+    <!-- Login Form -->
+    <form id="loginForm" class="auth-form" onsubmit="return handleLogin(event)">
+      <div class="auth-input-wrap"><input type="email" id="loginEmail" placeholder="邮箱地址" required autocomplete="email"></div>
+      <div class="auth-input-wrap"><input type="password" id="loginPassword" placeholder="密码" required autocomplete="current-password"></div>
+      <div id="loginError" class="auth-error"></div>
+      <div class="auth-form-actions">
+        <button type="submit" class="auth-btn-primary" id="loginBtn">登录</button>
+      </div>
+    </form>
+
+    <!-- Register Form -->
+    <form id="registerForm" class="auth-form" style="display:none" onsubmit="return handleRegister(event)">
+      <div class="auth-input-wrap"><input type="email" id="regEmail" placeholder="邮箱地址" required autocomplete="email"></div>
+      <div class="auth-input-wrap"><input type="password" id="regPassword" placeholder="设置密码（至少6位）" required minlength="6" autocomplete="new-password"></div>
+      <div class="auth-input-wrap"><input type="password" id="regPasswordConfirm" placeholder="确认密码" required minlength="6" autocomplete="new-password"></div>
+      <div class="auth-input-wrap"><input type="text" id="regLicense" placeholder="激活码（必填）" required></div>
+      <div id="registerError" class="auth-error"></div>
+      <div class="auth-form-actions">
+        <button type="submit" class="auth-btn-primary" id="registerBtn">注册</button>
+      </div>
+    </form>
+
+    <!-- 离线激活（无法联网时用） -->
+    <div class="auth-offline-section" style="margin-top:12px;text-align:center">
+      <a href="#" onclick="toggleOfflineActivation();return false" class="auth-offline-link">无法联网？离线激活</a>
+      <div id="offlineActivationBox" style="display:none;margin-top:8px">
+        <p class="auth-desc" style="margin:0 0 8px;font-size:13px;color:#64748b">输入管理员提供的离线激活码</p>
+        <div class="auth-input-wrap"><input type="text" id="licenseInput" placeholder="请输入离线激活码"></div>
+        <div id="activateError" class="auth-error"></div>
+        <button type="button" class="auth-btn-primary" onclick="activateLicense()" style="background:#b45309">离线激活</button>
+      </div>
+    </div>
+
+    <!-- 试用模式 -->
+    <div class="auth-trial-link">
+      <a href="#" onclick="enterTrial();return false">试用模式（功能受限）</a>
+    </div>
+
+    <div class="auth-footer">
+      <span>版本 2.0</span>
+      <span class="auth-dot"></span>
+      <span>仅供科研用途</span>
+      <span class="auth-dot"></span>
+      <span>数据本地存储</span>
+    </div>
+  </div>
+</div>
+
+<!-- Help Overlay -->
+<div id="helpOverlay" class="overlay" style="display:none">
+  <div class="overlay-box help-box">
+    <h2>使用帮助</h2>
+    <h3>检索流程</h3>
+    <ul>
+      <li>设置关键词（疾病/人群、暴露/基因、结局、研究设计），选择检索模式</li>
+      <li>勾选可直连数据库（PubMed / Europe PMC / Crossref / OpenAlex），点击"联网获取"</li>
+      <li>勾选中文数据库（CNKI / 万方 / 维普 / SinoMed），系统生成各平台专用检索式，复制后去对应网站检索并导出题录文件，再导入本工具</li>
+      <li>也可手动导入 RIS / CSV / BibTeX / NBIB / PubMed XML 文件</li>
+    </ul>
+    <h3>评分与筛选</h3>
+    <ul>
+      <li>系统根据关键词命中情况自动评分，分为"建议纳入""建议排除""待人工判断"三档</li>
+      <li>支持人群研究与动物研究分开评分，可在"研究对象模式"中切换</li>
+      <li>标题命中权重高于摘要；多组关键词协同命中有加分</li>
+      <li>可在"高级评分设置"中自定义各类规则权重和阈值</li>
+      <li>人工复核后点击"最终纳入"或"最终排除"锁定结论</li>
+    </ul>
+    <h3>数据存储</h3>
+    <ul>
+      <li>所有数据存储在浏览器本地（localStorage），不会上传到任何服务器</li>
+      <li>清除浏览器数据会导致记录丢失，请定期使用"备份 JSON"功能</li>
+    </ul>
+    <div class="actions"><button onclick="hideHelp()">关闭</button></div>
+  </div>
+</div>
+
+<!-- About Overlay -->
+<div id="aboutOverlay" class="overlay" style="display:none">
+  <div class="overlay-box">
+    <h2>关于软件</h2>
+    <p><b>Meta分析文献筛选器 Pro</b></p>
+    <p>版本：2.0</p>
+    <p>辅助医学/公共卫生研究人员高效完成系统综述和 Meta 分析的文献初筛工作。</p>
+    <p>支持多数据库联合检索与去重、自动评分与人工复核、人群/动物研究分类。</p>
+    <p id="aboutLicense" class="muted"></p>
+    <div class="actions"><button onclick="hideAbout()">关闭</button></div>
+  </div>
+</div>
+
+<!-- Main App -->
+<div id="mainApp" class="app" style="display:none">
+
+<div class="navbar">
+  <h1>Meta分析文献筛选器 Pro</h1>
+  <button onclick="handleLogout()">退出登录</button>
+  <button onclick="showHelp()">帮助</button>
+  <button onclick="showAbout()">关于</button>
+</div>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-grid">
+    <div class="hero-content">
+      <span class="hero-badge">v2.0 Pro · 科研辅助软件</span>
+      <h2 class="hero-title">让 Meta 分析文献初筛，像正式软件一样高效完成</h2>
+      <p class="hero-desc">支持多数据库联合检索、自动评分筛选、中文数据库辅助检索，以及人群/动物双轨分析，帮助系统综述与 Meta 分析更快进入可复核工作流。</p>
+      <div class="hero-actions">
+        <a href="#workspace" class="hero-cta">开始使用</a>
+        <span class="hero-note">本地运行 · 无需部署 · 数据仅保存在本机浏览器</span>
+      </div>
+    </div>
+    <div class="hero-panel">
+      <div class="hero-stat"><b>4</b><span>直连数据库</span></div>
+      <div class="hero-stat"><b>4</b><span>中文库辅助</span></div>
+      <div class="hero-stat"><b>双轨</b><span>人群 / 动物评分</span></div>
+      <div class="hero-stat"><b>本地</b><span>授权与数据存储</span></div>
+    </div>
+  </div>
+</section>
+
+<p class="sub">支持 <b>PubMed / Europe PMC / Crossref / OpenAlex</b> 一键检索，为 <b>CNKI、万方、维普、SinoMed/CBM</b> 生成专用检索式辅助导入。</p>
+
+<div class="card grid">
+  <div class="mode">
+    <label>检索模式</label>
+    <select id="mode">
+      <option value="wide">宽检索：疾病/人群 AND 暴露/基因</option>
+      <option value="middle">中等检索：再加入结局关键词</option>
+      <option value="strict">严格检索：再加入原始研究设计词</option>
+    </select>
+    <p class="muted">建议先宽检索，再用下方自动评分 + 人工复核做筛选。</p>
+  </div>
+  <div class="mode">
+    <label>研究对象模式</label>
+    <select id="studyMode">
+      <option value="human">仅人群研究</option>
+      <option value="animal">仅动物研究</option>
+      <option value="in_vitro">仅体外研究</option>
+      <option value="both">人群 + 动物（双轨评分）</option>
+    </select>
+    <p class="muted">切换后自动重评分并过滤。体外研究可识别细胞实验、Western Blot、PCR 等。</p>
+  </div>
+  <div class="mode" style="grid-column:1/-1">
+    <label>可直连数据库（一键获取）</label>
+    <div class="db-list">
+      <label class="db-item"><input type="checkbox" class="db-check" value="pubmed" checked>PubMed</label>
+      <label class="db-item"><input type="checkbox" class="db-check" value="europepmc">Europe PMC</label>
+      <label class="db-item"><input type="checkbox" class="db-check" value="crossref">Crossref</label>
+      <label class="db-item"><input type="checkbox" class="db-check" value="openalex">OpenAlex</label>
+    </div>
+  </div>
+  <div class="mode" style="grid-column:1/-1">
+    <label>中文数据库辅助检索（生成检索式 + 导入）</label>
+    <div class="db-list">
+      <label class="db-item"><input type="checkbox" class="db-check-cn" value="cnki">CNKI</label>
+      <label class="db-item"><input type="checkbox" class="db-check-cn" value="wanfang">万方</label>
+      <label class="db-item"><input type="checkbox" class="db-check-cn" value="vip">维普</label>
+      <label class="db-item"><input type="checkbox" class="db-check-cn" value="cbm">SinoMed/CBM</label>
+    </div>
+    <p class="note">勾选后点击"联网获取"将生成各平台专用检索式，您在对应网站检索并导出题录文件后导入本工具。</p>
+    <div class="cn-kw-section" style="margin-top:10px;border-top:1px dashed #dbeafe;padding-top:10px">
+      <label style="color:#0b4f79">中文检索关键词（用于生成中文数据库检索式，同义词用 ; 分隔，每行一组概念）</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px">
+        <div><label>中文疾病/人群</label><textarea id="cnPop" style="min-height:60px" placeholder="所有同义词放一行，用 ; 分隔&#10;每行是一个AND概念组">尘肺; 矽肺; 煤工尘肺; 职业性肺病</textarea></div>
+        <div><label>中文动物/模型</label><textarea id="cnAnimal" style="min-height:60px" placeholder="仅"动物模式"时生效&#10;小鼠; 大鼠; 动物模型">小鼠; 大鼠; 动物模型; 斑马鱼</textarea></div>
+        <div><label>中文暴露/基因</label><textarea id="cnExpo" style="min-height:60px" placeholder="所有同义词放一行&#10;每行是一个AND概念组">白细胞介素-6; IL-6; 基因多态性; 细胞因子</textarea></div>
+      </div>
+      <p class="note">留空则自动使用上方英文关键词（但英文词在中文数据库通常检索不到结果）。</p>
+    </div>
+  </div>
+</div>
+
+<div class="card grid">
+  <div><label>疾病/人群关键词（同义词用 ; 分隔，每行一组概念）</label><textarea id="pop">pneumoconiosis; silicosis; coal workers pneumoconiosis</textarea></div>
+  <div><label>动物模型/动物种属关键词</label><textarea id="animalTerms">mouse; mice; rat; rabbit
+murine; rodent; animal model
+in vivo; zebrafish</textarea></div>
+  <div><label>暴露/基因/因素关键词</label><textarea id="expo">IL-6; interleukin-6; interleukin 6</textarea></div>
+  <div><label>结局关键词（中等/严格检索时使用）</label><textarea id="outcome">risk; susceptibility; genotype; allele; odds ratio</textarea></div>
+  <div><label>原始研究设计关键词（严格检索时使用）</label><textarea id="design">case-control; case control
+cohort
+cross-sectional; observational study</textarea></div>
+  <div><label>年份起</label><input id="yf" placeholder="如 1990" value="1990"></div>
+  <div><label>年份止</label><input id="yt" placeholder="如 2026" value="2026"></div>
+  <div><label>目标获取数量（0=不限）</label><input id="max" type="number" value="200" min="0"></div>
+  <div><label>排序</label><select id="sort"><option value="relevance">相关性</option><option value="pub date">发表时间</option></select></div>
+</div>
+
+<div class="card">
+  <div class="actions">
+    <button onclick="buildQuery()">生成检索式</button>
+    <button class="g" onclick="fetchSelectedDatabases()">联网获取所选数据库题录</button>
+    <button onclick="stopFetch()" class="r" id="btnStop" style="display:none">停止获取</button>
+    <button onclick="copyQuery('pubmedQuery')">复制 PubMed 检索式</button>
+    <button onclick="copyQuery('genericQuery')">复制通用检索词</button>
+    <button class="gray" onclick="screenAll()">重新评分</button>
+  </div>
+  <span id="status" class="muted">未检索</span>
+  <div class="progress-bar" id="progressBar" style="display:none"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+  <label style="margin-top:10px">PubMed 检索式</label>
+  <div id="pubmedQuery" class="q"></div>
+  <label style="margin-top:10px">通用检索词（适合 Europe PMC / Crossref / OpenAlex）</label>
+  <div id="genericQuery" class="q"></div>
+  <div id="cnQueryPanel"></div>
+</div>
+
+<div class="card grid3">
+  <div><label>纳入倾向词（命中加分）</label><textarea id="incWords">case-control
+case control
+cohort
+cross-sectional
+observational
+human
+patients
+odds ratio
+risk
+susceptibility
+polymorphism
+variant
+SNP
+genotype
+allele</textarea></div>
+  <div><label>排除倾向词（命中扣分）</label><textarea id="excWords">meta-analysis
+systematic review
+review
+protocol
+case report
+letter
+editorial
+comment
+conference abstract</textarea></div>
+  <div class="two-line">
+    <div><label>建议纳入阈值</label><input id="incCut" type="number" value="4"></div>
+    <div><label>建议排除阈值</label><input id="excCut" type="number" value="-2"></div>
+    <div><label>手动导入来源数据库</label>
+      <select id="manualSource">
+        <option value="embase">Embase</option>
+        <option value="wos">Web of Science</option>
+        <option value="scopus">Scopus</option>
+        <option value="cochrane">Cochrane Library</option>
+        <option value="cnki">CNKI</option>
+        <option value="wanfang">万方</option>
+        <option value="vip">维普</option>
+        <option value="cbm">SinoMed / CBM</option>
+        <option value="google-scholar">Google Scholar</option>
+        <option value="other">其他</option>
+      </select>
+    </div>
+    <div><label>导入题录文件</label><input type="file" id="recordFile" accept=".ris,.csv,.bib,.bibtex,.nbib,.txt,.xml" onchange="importRecordsFile(event)"></div>
+    <div><label>导入备份 JSON</label><input type="file" id="backupFile" accept=".json" onchange="importJSON(event)"></div>
+    <div class="actions">
+      <button class="g" onclick="exportCSV()">导出 CSV</button>
+      <button class="g" onclick="exportJSON()">备份 JSON</button>
+      <button class="y" onclick="demo()">示例</button>
+      <button class="r" onclick="clearAll()">清空</button>
+    </div>
+  </div>
+</div>
+
+<details class="card adv-panel">
+  <summary>高级评分设置</summary>
+  <div class="adv-row"><label>标题命中倍率</label><input id="advTitleMul" type="number" value="2" min="1" max="5" step="0.5"><span class="muted">标题命中关键词权重 = 基础权重 × 此值</span></div>
+  <div class="adv-row"><label>多组协同加分</label><input id="advSynergy" type="number" value="2" min="0" max="10"><span class="muted">同时命中 ≥3 组检索词时的额外加分</span></div>
+  <div class="adv-row"><label>排除词连续惩罚</label><input id="advExcPenalty" type="number" value="-1" max="0" step="1"><span class="muted">每多命中 1 个排除词的额外扣分</span></div>
+  <div class="adv-row"><label>出版类型强排除</label><input id="advPubTypeExc" type="number" value="-5" max="0"><span class="muted">review/editorial/letter/case report 的额外扣分</span></div>
+  <div class="adv-row"><label>人群正向词</label><textarea id="advHumanPos" style="min-height:40px">human; patient; patients; cohort; case-control; clinical trial; population</textarea></div>
+  <div class="adv-row"><label>动物正向词</label><textarea id="advAnimalPos" style="min-height:40px">animal; mouse; mice; rat; rabbit; zebrafish; in vivo; murine; rodent</textarea></div>
+</details>
+
+<div class="card">
+  <span class="pill">总数 <b id="total">0</b></span>
+  <span class="pill">去重合并 <b id="nDup">0</b></span>
+  <span class="pill">建议纳入 <b id="nIn">0</b></span>
+  <span class="pill">建议排除 <b id="nEx">0</b></span>
+  <span class="pill">待人工 <b id="nMay">0</b></span>
+  <span class="pill">最终纳入 <b id="nFinIn">0</b></span>
+  <span class="pill">最终排除 <b id="nFinEx">0</b></span>
+  <div class="inline" style="margin-top:8px">
+    搜索 <input id="f" placeholder="关键词 / PMID / DOI" style="max-width:320px">
+    结论 <select id="fd"><option value="">全部</option><option>建议纳入</option><option>建议排除</option><option>待人工判断</option><option>最终纳入</option><option>最终排除</option></select>
+    来源 <select id="fs"><option value="">全部来源</option></select>
+    类型 <select id="ft"><option value="">全部类型</option><option value="human">人群研究</option><option value="animal">动物研究</option><option value="in_vitro">体外研究</option><option value="unclear">不明确</option></select>
+  </div>
+  <div id="sourceStats" class="source-stats"></div>
+</div>
+
+<div class="card">
+  <details open>
+    <summary style="font-weight:700;color:#0b4f79;cursor:pointer;font-size:15px">📊 PRISMA 2020 流程图</summary>
+    <div class="prisma-controls">
+      <label style="margin:0;display:flex;align-items:center;gap:6px">未获取全文: <input id="prismaNotRetrieved" type="number" value="0" min="0" style="width:70px;padding:5px;text-align:center" onchange="onPrismaNotRetrievedChange()"></label>
+      <button onclick="exportPRISMASVG()" style="font-size:12px;padding:6px 12px">📥 导出 SVG</button>
+      <button onclick="exportPRISMAPNG()" style="font-size:12px;padding:6px 12px">🖼️ 导出 PNG</button>
+    </div>
+    <div id="prismaContainer" class="prisma-container"></div>
+  </details>
+</div>
+
+<div class="card wrap">
+<table>
+  <thead><tr>
+    <th>来源</th><th>类型</th><th>结论</th><th>分数</th><th>题名/摘要</th><th>年份</th><th>期刊</th><th>作者</th><th>标识符</th><th>命中词</th><th>原因</th><th>操作</th>
+  </tr></thead>
+  <tbody id="tb"></tbody>
+</table>
+</div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
