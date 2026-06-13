@@ -2,38 +2,44 @@
 
 // ===== 反爬保护 =====
 (function(){
-  // 禁用右键菜单
+  // 1. 禁用右键
   document.addEventListener('contextmenu',e=>e.preventDefault());
-  // 禁用拖拽选中
+  // 2. 禁用拖拽
   document.addEventListener('dragstart',e=>e.preventDefault());
-  // 禁用 Ctrl+S / Ctrl+U / Ctrl+P / F12
+  // 3. 封锁快捷键
   document.addEventListener('keydown',e=>{
-    if(e.ctrlKey&&(e.key==='s'||e.key==='S'||e.key==='u'||e.key==='U'||e.key==='p'||e.key==='P')){e.preventDefault();return false}
-    if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&(e.key==='I'||e.key==='i'||e.key==='C'||e.key==='c'||e.key==='J'||e.key==='j'))){e.preventDefault();return false}
+    if(e.ctrlKey&&['s','S','u','U','p','P'].includes(e.key)){e.preventDefault();return false}
+    if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['I','i','C','c','J','j'].includes(e.key))){e.preventDefault();return false}
   });
-  // DevTools 检测（打开控制台后持续告警）
-  let devtoolsOpen=false;
-  const threshold=160;
+  // 4. DevTools 检测
+  let detections=0, warned=false;
+  function showWarning(){
+    if(warned) return; warned=true;
+    document.body.style.filter='blur(6px)';
+    document.body.style.pointerEvents='none';
+    const ov=document.createElement('div');
+    ov.id='secOv'; ov.innerHTML='<div style="position:fixed;inset:0;z-index:9999999;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:system-ui,sans-serif"><h1 style="font-size:28px;color:#ef4444">&#x26A0;&#xFE0F; 安全警告</h1><p style="font-size:17px;color:#e2e8f0;margin-top:12px">检测到开发者工具已打开</p><p style="font-size:14px;color:#94a3b8;margin-top:4px">请关闭开发者工具后刷新页面继续使用</p></div>';
+    document.body.appendChild(ov);
+    // 持续清理控制台
+    setInterval(()=>{console.clear();console.log('%c关闭开发者工具后刷新页面','color:red;font-size:20px')},500);
+  }
+  // 方法 A: debugger 定时陷阱（DevTools 开着时 debugger 会暂停，耗时明显增加）
   setInterval(()=>{
-    const w=window.outerWidth-window.innerWidth;
-    const h=window.outerHeight-window.innerHeight;
-    if(w>threshold||h>threshold){
-      if(!devtoolsOpen){
-        devtoolsOpen=true;
-        console.clear();
-        console.log('%c⚠️ 安全警告','color:red;font-size:30px');
-        console.log('%c请关闭开发者工具后继续使用','color:red;font-size:16px');
-        document.body.style.opacity='0.3';
-      }
-    }else{
-      if(devtoolsOpen){
-        devtoolsOpen=false;
-        document.body.style.opacity='1';
-      }
-    }
-  },1000);
-  // 禁止 console 快捷调用
-  Object.defineProperty(window,'console',{configurable:false,writable:false});
+    const t=performance.now();
+    debugger;
+    if(performance.now()-t>50) detections++;
+    if(detections>=2) showWarning();
+  },4000);
+  // 方法 B: 窗口尺寸差检测
+  setInterval(()=>{
+    const d=(window.outerWidth-window.innerWidth)+(window.outerHeight-window.innerHeight);
+    if(d>180) detections++;
+    if(detections>=2) showWarning();
+  },3000);
+  // 5. 禁止从控制台执行全局函数
+  setInterval(()=>{
+    if(typeof window._sec === 'undefined') window._sec = Date.now();
+  },2000);
 })();
 // ======================
 
