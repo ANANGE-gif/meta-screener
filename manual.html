@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meta分析文献筛选器 Pro · 使用说明书</title>
+<style>
+  :root {
+    --bg: #0f172a; --card: #1e293b; --border: #334155;
+    --text: #e2e8f0; --muted: #94a3b8; --accent: #3b82f6;
+    --warn: #f59e0b; --good: #22c55e; --bad: #ef4444;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.75;
+    max-width: 900px; margin: 0 auto; padding: 40px 24px 80px;
+  }
+  h1 { font-size: 2rem; margin-bottom: 4px; color: #fff; }
+  h2 {
+    font-size: 1.35rem; color: var(--accent); margin: 48px 0 16px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+  h3 { font-size: 1.1rem; color: #cbd5e1; margin: 28px 0 10px; }
+  p { margin: 10px 0; }
+  a { color: var(--accent); }
+  .badge {
+    display: inline-block; padding: 1px 10px; border-radius: 10px;
+    font-size: 0.8rem; font-weight: 600; margin-left: 8px;
+  }
+  .badge-green { background: #166534; color: #86efac; }
+  .badge-blue  { background: #1e3a5f; color: #93c5fd; }
+  .badge-amber { background: #78350f; color: #fde68a; }
+  .badge-red   { background: #7f1d1d; color: #fecaca; }
+
+  .toc {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 20px 28px; margin: 24px 0;
+  }
+  .toc h3 { margin-top: 0; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 6px 0; }
+
+  table {
+    width: 100%; border-collapse: collapse; margin: 16px 0;
+    font-size: 0.92rem;
+  }
+  th, td {
+    border: 1px solid var(--border); padding: 8px 12px; text-align: left;
+  }
+  th { background: var(--card); color: var(--accent); font-weight: 600; }
+
+  code {
+    background: #1e293b; padding: 2px 6px; border-radius: 4px;
+    font-size: 0.9em; color: #facc15;
+  }
+  pre {
+    background: #0f172a; border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px; overflow-x: auto; font-size: 0.85rem; margin: 12px 0;
+  }
+  pre code { background: none; color: #e2e8f0; padding: 0; }
+
+  ol, ul { padding-left: 22px; }
+  li { margin: 4px 0; }
+
+  .tip {
+    background: #1e3a5f; border-left: 4px solid var(--accent);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0;
+  }
+  .warn {
+    background: #78350f; border-left: 4px solid var(--warn);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0;
+  }
+  .step {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 20px 24px; margin: 16px 0;
+  }
+  .step .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%; background: var(--accent);
+    color: #fff; font-weight: 700; font-size: 0.85rem; margin-right: 10px;
+  }
+  .footer {
+    margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border);
+    color: var(--muted); font-size: 0.85rem; text-align: center;
+  }
+  img { max-width: 100%; border-radius: 8px; border: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<h1>📋 Meta分析文献筛选器 Pro · 使用说明书</h1>
+<p style="color:var(--muted);font-size:1.05rem">
+  版本 v2.0 · 适用于系统综述与 Meta 分析文献筛选全流程
+</p>
+
+<div class="toc">
+<h3>📑 目录</h3>
+<ol>
+  <li><a href="#overview">概述与核心功能</a></li>
+  <li><a href="#auth">激活与认证（三种方式）</a></li>
+  <li><a href="#workspace">工作区概览</a></li>
+  <li><a href="#search">数据库检索</a></li>
+  <li><a href="#import">手动导入文献</a></li>
+  <li><a href="#score">自动评分与筛选</a></li>
+  <li><a href="#prisma">PRISMA 2020 流程图</a></li>
+  <li><a href="#export">数据导出</a></li>
+  <li><a href="#advanced">高级配置</a></li>
+  <li><a href="#faq">常见问题</a></li>
+</ol>
+</div>
+
+<!-- ===== 1 ===== -->
+<h2 id="overview">1. 概述与核心功能</h2>
+
+<p><strong>Meta分析文献筛选器 Pro</strong> 是一个纯浏览器端运行的文献初筛工具，专为系统综述与 Meta 分析设计。数据全部存储在本地浏览器，无需部署服务器。</p>
+
+<h3>核心功能一览</h3>
+<table>
+<tr><th>功能</th><th>说明</th></tr>
+<tr><td>多数据库直连检索</td><td>PubMed、Europe PMC、Crossref、OpenAlex 一键检索</td></tr>
+<tr><td>中文数据库辅助</td><td>为 CNKI、万方、维普、SinoMed 自动生成检索式</td></tr>
+<tr><td>自动评分筛选</td><td>基于关键词规则对人群 / 动物 / 体外研究自动打分</td></tr>
+<tr><td>PRISMA 2020 流程图</td><td>自动生成可导出 SVG/PNG 的筛选流程图</td></tr>
+<tr><td>去重合并</td><td>跨数据库自动去重（基于 PMID / DOI / 标题+年份）</td></tr>
+<tr><td>文件导入</td><td>支持 RIS、BibTeX、CSV、NBIB 格式批量导入</td></tr>
+<tr><td>多格式导出</td><td>支持 JSON、CSV 导出，兼容 EndNote / Zotero / Excel</td></tr>
+<tr><td>离线可用</td><td>离线激活码模式，无需网络即可使用完整功能</td></tr>
+</table>
+
+<!-- ===== 2 ===== -->
+<h2 id="auth">2. 激活与认证</h2>
+
+<p>首次使用需要激活。提供三种方式：</p>
+
+<div class="step">
+<p><span class="num">A</span><strong>在线注册 + 激活码</strong></p>
+<p>点击「注册」选项卡，填写邮箱、密码和激活码。注册后检查邮箱确认链接，然后登录即可。激活码一码一人，由管理员分发。</p>
+<p class="tip">💡 在线模式支持跨设备数据同步（需配置 Supabase）。</p>
+</div>
+
+<div class="step">
+<p><span class="num">B</span><strong>离线激活</strong></p>
+<p>点击「无法联网？离线激活」链接，输入管理员提供的离线激活码。支持以下格式：</p>
+<ul>
+  <li><code>META-PRO-2024-FULL</code> / <code>META-PRO-2025-FULL</code></li>
+  <li><code>MAS-*</code> 或 <code>META-*</code> 前缀的任意码</li>
+</ul>
+<p class="tip">💡 离线激活完全在本地验证，无需网络，适合机构内网环境。</p>
+</div>
+
+<div class="step">
+<p><span class="num">C</span><strong>试用模式</strong></p>
+<p>点击「先试用看看」，无需任何激活码。限制：每次检索最多返回 <strong>15 条</strong> 记录。</p>
+</div>
+
+<div class="warn">⚠️ 清除浏览器数据会导致激活状态丢失。建议定期导出数据备份。</div>
+
+<!-- ===== 3 ===== -->
+<h2 id="workspace">3. 工作区概览</h2>
+
+<p>激活后进入工作区，主要分为以下几个区域：</p>
+
+<table>
+<tr><th>区域</th><th>位置</th><th>功能</th></tr>
+<tr><td>顶部导航栏</td><td>页面顶部</td><td>应用标题、帮助、关于、退出登录</td></tr>
+<tr><td>检索式配置区</td><td>工作区上部</td><td>输入 PICO 检索要素，构建检索式</td></tr>
+<tr><td>数据库选择区</td><td>检索式下方</td><td>勾选要检索的数据库，点击执行</td></tr>
+<tr><td>筛选器工具栏</td><td>结果区上方</td><td>排序、关键词过滤、按来源/决策/研究类型筛选</td></tr>
+<tr><td>文献列表</td><td>页面中部</td><td>展示文献卡片，含评分、决策按钮、来源标签</td></tr>
+<tr><td>分页 / 统计栏</td><td>列表底部</td><td>总记录数、筛选计数、翻页、导出按钮</td></tr>
+<tr><td>PRISMA 流程图</td><td>页面底部</td><td>自动更新的 PRISMA 2020 流程图</td></tr>
+</table>
+
+<!-- ===== 4 ===== -->
+<h2 id="search">4. 数据库检索</h2>
+
+<h3>4.1 构建检索式（PICO 框架）</h3>
+
+<p>在工作区上方按字段填写检索词，每行一个词组，同组内多个词用 <strong>分号 <code>;</code></strong> 或逗号分隔：</p>
+
+<table>
+<tr><th>字段</th><th>含义</th><th>示例</th></tr>
+<tr><td>人群 (Population)</td><td>研究对象</td><td><code>diabetes; type 2 diabetes</code></td></tr>
+<tr><td>暴露/干预 (Exposure)</td><td>处理或暴露因素</td><td><code>metformin; "glucophage"</code></td></tr>
+<tr><td>结局 (Outcome)</td><td>关注的结局指标</td><td><code>mortality; HbA1c</code></td></tr>
+<tr><td>研究设计 (Design)</td><td>文献类型限制</td><td><code>RCT; "randomized controlled"</code></td></tr>
+<tr><td>年份范围</td><td>发表年份</td><td><code>2015</code> — <code>2025</code></td></tr>
+</table>
+
+<p>检索模式三种：</p>
+<ul>
+  <li><strong>宽检索</strong>：仅 P+E 组合，结果多</li>
+  <li><strong>中检索</strong>：P+E+O，适度精确</li>
+  <li><strong>严格检索</strong>：P+E+O+D，最精确</li>
+</ul>
+
+<div class="tip">💡 建议先用宽检索，再用筛选器自动评分 + 人工复核逐步缩小范围。</div>
+
+<h3>4.2 直连数据库</h3>
+
+<p>勾选要检索的数据库，点击「<strong>🔍 检索选中数据库</strong>」按钮：</p>
+
+<table>
+<tr><th>数据库</th><th>类型</th><th>说明</th></tr>
+<tr><td>PubMed</td><td><span class="badge badge-green">直连</span></td><td>使用 Entrez API，支持完整 MeSH 检索式</td></tr>
+<tr><td>Europe PMC</td><td><span class="badge badge-green">直连</span></td><td>欧洲 PMC API，补充 PubMed 未收录文献</td></tr>
+<tr><td>Crossref</td><td><span class="badge badge-green">直连</span></td><td>侧重论文元数据和 DOI 检索</td></tr>
+<tr><td>OpenAlex</td><td><span class="badge badge-green">直连</span></td><td>开放学术图谱，覆盖面广</td></tr>
+</table>
+
+<p>每次最多获取数可在右上角设置（默认 500，试用模式限 15）。</p>
+
+<h3>4.3 中文数据库辅助</h3>
+
+<p>CNKI、万方、维普、SinoMed 四个中文库不直连，但工具会：</p>
+<ol>
+  <li>根据 PICO 自动生成适配各库的检索式</li>
+  <li>提供一键跳转链接，复制检索式到对应网站执行</li>
+  <li>检索结果导出后可通过「文件导入」回到筛选器</li>
+</ol>
+
+<p>勾选中文库后，下方会显示各自定制的检索式，点击「<strong>🔗 打开检索</strong>」直接跳转。</p>
+
+<div class="tip">💡 中文词请在 <strong>CN 人群词 / CN 动物词 / CN 暴露词</strong> 三个专属字段填写，工具会区别处理中英文检索式。</div>
+
+<!-- ===== 5 ===== -->
+<h2 id="import">5. 手动导入文献</h2>
+
+<p>除了在线检索，也支持从文件导入已有文献库：</p>
+
+<table>
+<tr><th>格式</th><th>来源</th><th>操作</th></tr>
+<tr><td>RIS</td><td>EndNote, Zotero, Mendeley, CNKI</td><td>点击「📥 导入」→ 选择 <code>.ris</code> 文件</td></tr>
+<tr><td>BibTeX</td><td>LaTeX, Google Scholar</td><td>点击「📥 导入」→ 选择 <code>.bib</code> 文件</td></tr>
+<tr><td>NBIB</td><td>PubMed 导出</td><td>点击「📥 导入」→ 选择 <code>.nbib</code> 文件</td></tr>
+<tr><td>CSV</td><td>Excel / Google Sheets</td><td>点击「📥 导入」→ 选择 <code>.csv</code> 文件</td></tr>
+<tr><td>JSON</td><td>本工具导出的备份</td><td>点击「📥 导入」→ 选择 <code>.json</code> 文件</td></tr>
+</table>
+
+<p>导入时自动去重：如果导入了已存在的文献（同 PMID / DOI / 标题+年份），会自动合并来源信息而非重复添加。</p>
+
+<div class="warn">⚠️ CSV 导入时确保包含标题列（title），否则去重效果不佳。</div>
+
+<!-- ===== 6 ===== -->
+<h2 id="score">6. 自动评分与筛选</h2>
+
+<h3>6.1 研究模式</h3>
+
+<p>切换研究模式会触发自动重评分：</p>
+
+<table>
+<tr><th>模式</th><th>评分依据</th></tr>
+<tr><td>人群研究 (Human)</td><td>匹配人群词得正分，动物词得负分；匹配暴露/结局词加分</td></tr>
+<tr><td>动物研究 (Animal)</td><td>匹配动物词（rat / mouse / rabbit 等）得正分；匹配人群词得负分</td></tr>
+<tr><td>体外研究 (In Vitro)</td><td>匹配细胞系 / Western Blot / PCR / ELISA 等体外标记词得正分</td></tr>
+</table>
+
+<h3>6.2 决策标记</h3>
+
+<p>每条文献可标记决策状态：</p>
+
+<table>
+<tr><th>标记</th><th>颜色</th><th>含义</th></tr>
+<tr><td>建议纳入</td><td style="color:var(--good)">🟢</td><td>自动评分高于入围阈值</td></tr>
+<tr><td>建议排除</td><td style="color:var(--bad)">🔴</td><td>自动评分低于排除阈值</td></tr>
+<tr><td>最终纳入</td><td style="color:var(--accent)">🔵</td><td>人工确认纳入（手动点击 ✅）</td></tr>
+<tr><td>最终排除</td><td style="color:var(--muted)">⚪</td><td>人工确认排除（手动点击 ❌），需填写排除原因</td></tr>
+<tr><td>待人工判断</td><td style="color:var(--warn)">🟡</td><td>评分在中间区间，需人工阅读决定</td></tr>
+</table>
+
+<h3>6.3 筛选器工具栏</h3>
+
+<p>可使用关键词包含/排除过滤、按来源筛选、按决策状态筛选、排序（评分 / 年份 / 标题）等快速定位目标文献。</p>
+
+<!-- ===== 7 ===== -->
+<h2 id="prisma">7. PRISMA 2020 流程图</h2>
+
+<p>页面底部自动维护符合 <strong>PRISMA 2020</strong> 标准的筛选流程图：</p>
+
+<ul>
+  <li><strong>自动计数</strong>：识别 → 去重 → 筛选 → 检索 → 纳入，各环节数字自动更新</li>
+  <li><strong>按研究模式</strong>：切换人群 / 动物 / 体外，流程图数据跟随变化</li>
+  <li><strong>排除原因汇总</strong>：人工排除时填写的原因自动汇总显示</li>
+  <li><strong>导出</strong>：点击「📥 下载 SVG」或「📥 下载 PNG」导出矢量或位图，可直接用于论文投稿</li>
+</ul>
+
+<p>手动补充项：</p>
+<ul>
+  <li><strong>未检索到</strong>：填入检索了但未获取到全文的篇数</li>
+</ul>
+
+<!-- ===== 8 ===== -->
+<h2 id="export">8. 数据导出</h2>
+
+<table>
+<tr><th>格式</th><th>操作</th><th>用途</th></tr>
+<tr><td>JSON</td><td>「📤 导出 JSON」</td><td>完整备份，含评分、决策、来源等所有字段；可重新导入恢复</td></tr>
+<tr><td>CSV</td><td>「📤 导出 CSV」</td><td>Excel 兼容，字段：决策、评分、研究类型、来源、PMID、DOI、原因、标题、年份、期刊、作者、命中词、摘要</td></tr>
+</table>
+
+<div class="tip">💡 建议每次筛选结束后导出 CSV 作为档案，导出 JSON 作为备份。JSON 备份可在清除浏览器数据后重新导入恢复完整进度。</div>
+
+<!-- ===== 9 ===== -->
+<h2 id="advanced">9. 高级配置</h2>
+
+<h3>9.1 评分调参</h3>
+<p>在「⚙️ 高级配置」面板中可调整：</p>
+<table>
+<tr><th>参数</th><th>默认值</th><th>作用</th></tr>
+<tr><td>入围阈值 (IncCut)</td><td>3</td><td>评分 ≥ 此值 → 建议纳入</td></tr>
+<tr><td>排除阈值 (ExcCut)</td><td>-3</td><td>评分 ≤ 此值 → 建议排除</td></tr>
+<tr><td>标题乘数</td><td>3</td><td>标题命中关键词的权重倍率</td></tr>
+<tr><td>协同加分</td><td>1</td><td>P+E 同时出现额外加分</td></tr>
+<tr><td>排除罚分</td><td>-2</td><td>命中排除词时的罚分</td></tr>
+</table>
+
+<h3>9.2 筛选词自定义</h3>
+<p>可自定义「包含词」（命中加分）和「排除词」（命中扣分），每行一个。</p>
+
+<h3>9.3 备份与恢复</h3>
+<ol>
+  <li>导出 JSON → 保存到安全位置</li>
+  <li>需要恢复时 → 导入该 JSON 文件</li>
+  <li>或在新设备上导入 JSON + 重新激活即可继续工作</li>
+</ol>
+
+<!-- ===== 10 ===== -->
+<h2 id="faq">10. 常见问题</h2>
+
+<h3>Q: 数据存在哪里？安全吗？</h3>
+<p>全部数据存储在浏览器的 <strong>localStorage</strong> 中，不上传到任何服务器。清除浏览器数据会丢失，请定期导出备份。</p>
+
+<h3>Q: PubMed 检索失败怎么办？</h3>
+<p>可能原因：① 网络问题（PubMed API 需科学上网）；② 检索式语法错误；③ 请求频率过高被限流。建议等待 3-5 秒后重试，或减少每次获取数量。</p>
+
+<h3>Q: 中文数据库为什么不能直连？</h3>
+<p>CNKI / 万方 / 维普 / SinoMed 没有公开 API。工具会生成专用检索式，需手动到相应网站执行检索，再将结果导出为 RIS 文件导入本工具。</p>
+
+<h3>Q: 换电脑了怎么迁移数据？</h3>
+<ol>
+  <li>旧电脑：导出 JSON 文件</li>
+  <li>新电脑：打开筛选器 → 导入该 JSON</li>
+  <li>激活码需在新设备上重新输入（一码一人，支持多设备）</li>
+</ol>
+
+<h3>Q: PRISMA 图不够精细怎么办？</h3>
+<p>导出 SVG 格式，在 Illustrator / Inkscape 中进一步编辑排版。数字不会说谎——各环节计数基于实际筛选数据。</p>
+
+<h3>Q: 支持多少条文献？</h3>
+<p>浏览器 localStorage 通常限制 5-10 MB，约可存储数千条完整记录。建议大数据集分批次处理。</p>
+
+<div class="footer">
+  <p>Meta分析文献筛选器 Pro v2.0 · 科研辅助工具</p>
+  <p>Powered by Local Browser · 数据安全本地存储</p>
+  <p style="margin-top:8px"><a href="index.html">← 返回主应用</a></p>
+</div>
+
+</body>
+</html>
