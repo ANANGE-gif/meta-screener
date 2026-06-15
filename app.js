@@ -1402,18 +1402,20 @@ async function fetchSelectedDatabases(){
   const batch=`batch-${Date.now()}`;
   const messages=[];
 
-  // Fetch all selected databases in parallel
+  // 逐个检索数据库（避免并行导致浏览器连接拥塞）
   const FETCHERS={pubmed:fetchPubMed,europepmc:fetchEuropePMC,crossref:fetchCrossref,openalex:fetchOpenAlex};
-  const promises=chosen.map(async source=>{
+  const results=[];
+  for(const source of chosen){
     try{
+      updateProgress(0,0,`${sourceLabelFor(source)}: 检索中...`);
       const m={batch,query:source==='pubmed'?$('pubmedQuery').textContent.trim():$('genericQuery').textContent.trim()};
       const result=await FETCHERS[source](m);
-      return `${sourceLabelFor(source)}：新增${result.added}，合并${result.merged}`;
+      results.push(`${sourceLabelFor(source)}：新增${result.added}，合并${result.merged}`);
     }catch(e){
-      return `${sourceLabelFor(source)}：失败（${e.message||'网络错误'}）`;
+      results.push(`${sourceLabelFor(source)}：失败（${e.message||'网络错误'}）`);
     }
-  });
-  const results=await Promise.all(promises);
+  }
+  hideProgress();
   messages.push(...results);
 
   // Score once after all records are in
