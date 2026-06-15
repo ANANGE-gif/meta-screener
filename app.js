@@ -1857,8 +1857,13 @@ function aopAutoMatchLiterature(){
 
 // -- Infer AOP structure from literature --
 function aopInferFromLiterature(){
-  if(!rec.length){$('aopStatus').textContent='请先在文献筛选标签页中导入或检索文献';return}
-  const p=aopGetCurrent();if(!p) return;
+  if(!rec.length){
+    $('aopWikiOverlay').style.display='';
+    var _titleEl=$('aopWikiOverlay')?.querySelector('h2');if(_titleEl)_titleEl.textContent='🧠 文献推断AOP';
+    $('aopWikiResults').innerHTML='<div style="padding:20px;text-align:center"><p style="font-size:16px;color:#0b4f79"><b>暂无文献数据</b></p><p class="muted">请先切换到 <b>📄 文献筛选</b> 标签页，配置关键词后点击 <b>联网获取</b> 或导入文献文件。</p><p class="muted">获取文献后，再回到此处点击推断。</p><br><button onclick="aopWikiClose();switchTab(\'tabScreening\')" class="g" style="font-size:14px;padding:10px 24px">📄 去获取文献</button></div>';
+    return;
+  }
+  var p=aopGetCurrent();if(!p){aopCreateProject();p=aopGetCurrent();if(!p)return}
   // Extract keywords from record titles/abstracts
   const wordFreq={};
   const stopWords=new Set(['the','a','an','of','in','and','to','for','is','on','that','by','this','with','from','are','was','were','be','been','as','at','or','not','it','its','has','have','had','but','we','they','their','can','may','also','which','all','between','among','than','no']);
