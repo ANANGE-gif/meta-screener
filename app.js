@@ -110,6 +110,7 @@ let aopPanY=20;
 let aopEdgeMode=false;
 let aopEdgeSourceId=null;
 let aopSelectedNodeId=null;
+let aopSelectedEdgeId=null;
 let aopDragState=null;
 let aopPanState=null;
 let aopContextNodeId=null;
