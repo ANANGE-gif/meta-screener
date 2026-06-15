@@ -1697,7 +1697,7 @@ function render(opts={}){
   $('nMay').textContent=frec.filter(x=>x.decision==='待人工判断').length;
   $('nFinIn').textContent=frec.filter(x=>x.decision==='最终纳入').length;
   $('nFinEx').textContent=frec.filter(x=>x.decision==='最终排除').length;
-  renderSourceStats(l.length?l:frec);
+  renderSourceStats(frec);
   if(!skipPrisma||prismaDirty){
     renderPRISMA();
     prismaDirty=false;
