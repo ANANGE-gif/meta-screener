@@ -231,7 +231,7 @@ a{color:#0f6b9e}
 .aop-toolbar-sep{width:1px;height:24px;background:#cbd5e1;margin:0 4px}
 
 /* ===== AOP Canvas ===== */
-.aop-canvas-container{position:relative;background:#fafcff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;height:560px;min-height:400px;cursor:grab}
+.aop-canvas-container{position:relative;background:#fafcff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;height:700px;min-height:400px;cursor:grab}
 .aop-canvas-container:active{cursor:grabbing}
 #aopCanvas{width:100%;height:100%;display:block}
 
