@@ -1648,11 +1648,8 @@ function studyTypeBadge(st){
 function sourceCounts(records){
   const counts={};
   records.forEach(r=>{
-    const seen=new Set();
-    (r.sources&&r.sources.length?r.sources:[{source:r.source}]).forEach(s=>{
-      if(seen.has(s.source)) return;seen.add(s.source);
-      counts[s.source]=(counts[s.source]||0)+1;
-    });
+    // Only count primary source, not all merged sources
+    counts[r.source]=(counts[r.source]||0)+1;
   });
   return counts;
 }
