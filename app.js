@@ -1797,7 +1797,7 @@ function aopDeleteProject(){const e=aopGetCurrent();if(!e||!confirm('确定删�
 function aopRenameProject(){const e=aopGetCurrent();if(!e)return;const t=prompt('新名称：',e.name);if(!t)return;e.name=t;e.updatedAt=new Date().toISOString();aopSaveNow();aopUpdateProjectSelect()}
 
 // Canvas rendering
-function aopRender(){const p=aopGetCurrent(),ec=$('aopEdgesGroup'),nc=$('aopNodesGroup');if(!ec||!nc)return;ec.innerHTML='';nc.innerHTML='';if(!p||!p.nodes.length)return;const N={};p.nodes.forEach(n=>N[n.id]=n);const svg=$('aopCanvas');svg.setAttribute('viewBox','0 0 4200 4200');svg.setAttribute('width','4200');svg.setAttribute('height','4200');(p.edges||[]).forEach(e=>{const sn=N[e.sourceId],tn=N[e.targetId];if(!sn||!tn)return;const sx=sn.x+sn.w/2,sy=sn.y+40,tx=tn.x+tn.w/2,ty=tn.y,dy=Math.abs(ty-sy),d=`M${sx},${sy} C${sx},${sy+dy*0.5} ${tx},${ty-dy*0.5} ${tx},${ty}`,sel=e.id===aopSelectedEdgeId||aopEdgeSourceId===sn.id;ec.innerHTML+=`<path d="${d}" class="aop-edge ${sel?'selected':''}" marker-end="url(#${sel?'aopArrowSel':'aopArrow'})" data-edge-id="${e.id}" onclick="event.stopPropagation();aopSelectEdge('${e.id}')"/>`});p.nodes.forEach(n=>{const t=AOP_NODE_TYPES[n.type]||AOP_NODE_TYPES.ke,sel=n.id===aopSelectedNodeId,ev=(n.evidenceRefs||[]).length;nc.innerHTML+=`<g transform="translate(${n.x},${n.y})" class="aop-node-group ${sel?'selected':''}" onmousedown="aopNodeMouseDown(event,'${n.id}')" onclick="event.stopPropagation()" oncontextmenu="aopNodeContextMenu(event,'${n.id}')" ondblclick="aopOpenEvidenceOverlay('${n.id}')"><rect width="${n.w||t.w}" height="${n.h||t.h}" rx="10" class="aop-node-bg ${t.cls}"/><text x="${(n.w||t.w)/2}" y="20" text-anchor="middle" class="aop-node-type">${t.label}</text><text x="${(n.w||t.w)/2}" y="42" text-anchor="middle" class="aop-node-label">${esc(n.label||t.label)}</text><text x="${(n.w||t.w)/2}" y="${(n.h||t.h)-10}" text-anchor="middle" font-size="10" fill="#94a3b8">${esc((n.description||'').slice(0,30))}</text>${ev?`<circle cx="${(n.w||t.w)-14}" cy="14" r="11" class="aop-ev-badge"/><text x="${(n.w||t.w)-14}" y="14" class="aop-ev-count">${ev}</text>`:''}</g>`});aopApplyTransform();aopUpdateDetailPanel();aopSaveNow()}
+function aopRender(){const p=aopGetCurrent(),ec=$('aopEdgesGroup'),nc=$('aopNodesGroup');if(!ec||!nc)return;ec.innerHTML='';nc.innerHTML='';const es=$('aopEmptyState'),cc=$('aopCanvasContainer');if(es&&cc){if(!p||!p.nodes.length){es.style.display='';cc.style.display='none';return}else{es.style.display='none';cc.style.display=''}}const N={};p.nodes.forEach(n=>N[n.id]=n);const svg=$('aopCanvas');svg.setAttribute('viewBox','0 0 4200 4200');svg.setAttribute('width','4200');svg.setAttribute('height','4200');(p.edges||[]).forEach(e=>{const sn=N[e.sourceId],tn=N[e.targetId];if(!sn||!tn)return;const sx=sn.x+sn.w/2,sy=sn.y+40,tx=tn.x+tn.w/2,ty=tn.y,dy=Math.abs(ty-sy),d=`M${sx},${sy} C${sx},${sy+dy*0.5} ${tx},${ty-dy*0.5} ${tx},${ty}`,sel=e.id===aopSelectedEdgeId||aopEdgeSourceId===sn.id;ec.innerHTML+=`<path d="${d}" class="aop-edge ${sel?'selected':''}" marker-end="url(#${sel?'aopArrowSel':'aopArrow'})" data-edge-id="${e.id}" onclick="event.stopPropagation();aopSelectEdge('${e.id}')"/>`});p.nodes.forEach(n=>{const t=AOP_NODE_TYPES[n.type]||AOP_NODE_TYPES.ke,sel=n.id===aopSelectedNodeId,ev=(n.evidenceRefs||[]).length;nc.innerHTML+=`<g transform="translate(${n.x},${n.y})" class="aop-node-group ${sel?'selected':''}" onmousedown="aopNodeMouseDown(event,'${n.id}')" onclick="event.stopPropagation()" oncontextmenu="aopNodeContextMenu(event,'${n.id}')" ondblclick="aopOpenEvidenceOverlay('${n.id}')"><rect width="${n.w||t.w}" height="${n.h||t.h}" rx="10" class="aop-node-bg ${t.cls}"/><text x="${(n.w||t.w)/2}" y="20" text-anchor="middle" class="aop-node-type">${t.label}</text><text x="${(n.w||t.w)/2}" y="42" text-anchor="middle" class="aop-node-label">${esc(n.label||t.label)}</text><text x="${(n.w||t.w)/2}" y="${(n.h||t.h)-10}" text-anchor="middle" font-size="10" fill="#94a3b8">${esc((n.description||'').slice(0,30))}</text>${ev?`<circle cx="${(n.w||t.w)-14}" cy="14" r="11" class="aop-ev-badge"/><text x="${(n.w||t.w)-14}" y="14" class="aop-ev-count">${ev}</text>`:''}</g>`});aopApplyTransform();aopUpdateDetailPanel();aopSaveNow()}
 function aopApplyTransform(){const e=$('aopCanvasTransform');if(!e)return;e.setAttribute('transform',`translate(${aopPanX},${aopPanY}) scale(${aopZoom})`)}
 
 // Canvas interaction
@@ -1834,9 +1834,69 @@ function aopFitToScreen(){const e=aopGetCurrent();if(!e||!e.nodes.length)return;
 // Auto layout
 function aopAutoLayout(){const e=aopGetCurrent();if(!e||!e.nodes.length)return;const GX=260,GY=160,SX=60,SY=60,ord={stressor:0,mie:1,ke:2,ao:3},ly=[[],[],[],[]];e.nodes.forEach(n=>{const i=ord[n.type]||2;ly[i].push(n)});let cy=SY;ly.forEach(l=>{if(!l.length)return;let cx=SX;l.forEach(n=>{n.x=cx;n.y=cy;cx+=GX});cy+=GY});for(let i=0;i<ly.length-1;i++){const s=ly[i],t=ly[i+1];if(!s.length||!t.length)continue;s.forEach(a=>{t.forEach(b=>{const ex=(e.edges||[]).find(p=>p.sourceId===a.id&&p.targetId===b.id);if(!ex)e.edges.push({id:'edge-'+Date.now()+Math.random().toString(36).slice(2,6),sourceId:a.id,targetId:b.id,label:'',style:'solid'})})})}aopSaveNow();aopRender();aopFitToScreen();$('aopStatus').textContent='自动布局完成'}
 
+// -- Auto-match literature to nodes --
+function aopAutoMatchLiterature(){
+  const p=aopGetCurrent();if(!p||!p.nodes.length) return;
+  if(!rec.length){$('aopStatus').textContent='请先在文献筛选标签页中导入或检索文献';return}
+  let matched=0;
+  p.nodes.forEach(n=>{
+    const keywords=(n.label||'')+' '+(n.description||'');
+    if(!keywords.trim()) return;
+    const terms=keywords.toLowerCase().split(/[\s,;，；]+/).filter(x=>x.length>2);
+    if(!terms.length) return;
+    rec.forEach(r=>{
+      if((n.evidenceRefs||[]).includes(r.id)) return;
+      const text=(r.title+' '+r.abstract).toLowerCase();
+      const hits=terms.filter(t=>text.includes(t)).length;
+      if(hits>=2){if(!n.evidenceRefs)n.evidenceRefs=[];n.evidenceRefs.push(r.id);matched++}
+    });
+  });
+  aopSaveNow();aopRender();
+  $('aopStatus').textContent=`自动匹配完成：${matched} 条文献已链接到相关节点`;
+}
+
+// -- Infer AOP structure from literature --
+function aopInferFromLiterature(){
+  if(!rec.length){$('aopStatus').textContent='请先在文献筛选标签页中导入或检索文献';return}
+  const p=aopGetCurrent();if(!p) return;
+  // Extract keywords from record titles/abstracts
+  const wordFreq={};
+  const stopWords=new Set(['the','a','an','of','in','and','to','for','is','on','that','by','this','with','from','are','was','were','be','been','as','at','or','not','it','its','has','have','had','but','we','they','their','can','may','also','which','all','between','among','than','no']);
+  rec.forEach(r=>{
+    const text=(r.title+' '+r.abstract).toLowerCase().replace(/[^a-z0-9\s-]/g,' ');
+    const words=text.split(/\s+/).filter(w=>w.length>4&&!stopWords.has(w));
+    const seen=new Set();
+    words.forEach(w=>{if(!seen.has(w)){seen.add(w);wordFreq[w]=(wordFreq[w]||0)+1}})
+  });
+  // Sort by frequency
+  const sorted=Object.entries(wordFreq).sort((a,b)=>b[1]-a[1]).slice(0,30);
+  // Build suggestion HTML
+  let html='<div style="padding:16px;max-height:300px;overflow-y:auto">';
+  html+='<b style="color:#0b4f79">从 '+rec.length+' 篇文献中提取的高频术语：</b><br><br>';
+  html+='<div style="display:flex;flex-wrap:wrap;gap:6px">';
+  sorted.forEach(([word,freq])=>{
+    html+=`<span style="padding:4px 10px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:99px;font-size:12px;cursor:pointer" onclick="aopInferAddNode('${word}')" title="点击添加为KE节点">${esc(word)} <span style="color:#3b82f6;font-weight:700">${freq}</span></span>`;
+  });
+  html+='</div><br><p class="muted">点击术语添加为KE节点。建议：先添加Stressor和MIE，再从中选择关键事件。</p></div>';
+  // Change overlay title
+  const titleEl=$('aopWikiOverlay')?.querySelector('h2');if(titleEl)titleEl.textContent='🧠 文献术语推断AOP节点';
+  $('aopWikiResults').innerHTML=html;
+  $('aopWikiOverlay').style.display='';
+}
+
+function aopInferAddNode(word){
+  const p=aopGetCurrent();if(!p) return;
+  const vx=Math.max(50,Math.round((-aopPanX+300)/aopZoom)),vy=Math.max(50,Math.round((-aopPanY+200+Math.random()*200)/aopZoom));
+  p.nodes.push({id:'node-'+Date.now(),type:'ke',label:word.charAt(0).toUpperCase()+word.slice(1),description:'',x:vx,y:vy,w:200,h:80,evidenceRefs:[],aopWikiId:null});
+  aopSaveNow();aopRender();
+  $('aopStatus').textContent='已添加节点：'+word;
+  // If overlay is open, hide it
+  setTimeout(()=>{if($('aopWikiOverlay').style.display!=='none')aopWikiClose()},300);
+}
+
 // AOP-Wiki
 function aopShowWikiSearch(){$('aopWikiOverlay').style.display=''}
-function aopWikiClose(){$('aopWikiOverlay').style.display='none'}
+function aopWikiClose(){$('aopWikiOverlay').style.display='none';const t=$('aopWikiOverlay')?.querySelector('h2');if(t)t.textContent='🔍 AOP-Wiki 检索与导入'}
 async function aopWikiSearch(){const e=$('aopWikiSearchInput').value.trim();if(!e){$('aopWikiResults').innerHTML='<p class="muted">请输入关键词</p>';return}$('aopWikiResults').innerHTML='<p class="muted">搜索中…</p>';try{const t=await fetchWithTimeout(AOP_WIKI_API+'/api-git/marvinm2/AOPWikiQueries/get-all-aops',{headers:{Accept:'application/json'}},12000);if(!t.ok)throw new Error('API error');const n=await t.json(),o=e.toLowerCase(),r=(Array.isArray(n)?n:[]).filter(x=>{const a=(x.AOPName||x.title||'').toLowerCase(),s=(x.Stressor||x.stressor||'').toLowerCase(),l=(x.AdverseOutcome||x.adverseOutcome||'').toLowerCase();return a.includes(o)||s.includes(o)||l.includes(o)}).slice(0,30);if(!r.length){$('aopWikiResults').innerHTML='<p class="muted">未找到与"'+esc(e)+'"相关的AOP</p>';return}aopWikiRenderResults(r)}catch(t){$('aopWikiResults').innerHTML='<p style="color:#be123c">搜索失败：'+esc(t.message||'网络错误')+'<br><small>AOP-Wiki API 可能需要科学上网</small></p>'}}
 function aopWikiRenderResults(e){$('aopWikiResults').innerHTML=e.map(r=>{const i=r.AOPID||r.id||'?',a=r.AOPName||r.title||'Untitled',s=r.Stressor||r.stressor||'—',l=r.AdverseOutcome||r.adverseOutcome||'—';return'<div class="aopwiki-result-card"><h4>AOP '+i+': '+esc(a)+'</h4><div class="aopwiki-meta"><b>Stressor:</b> '+esc(s)+'</div><div class="aopwiki-meta"><b>AO:</b> '+esc(l)+'</div><div class="aopwiki-actions"><button onclick="aopWikiImport('+i+')" class="g" style="font-size:11px;padding:6px 14px">导入此AOP</button></div></div>'}).join('')}
 async function aopWikiImport(e){$('aopWikiResults').innerHTML='<p class="muted">正在获取AOP详情…</p>';try{const t=await fetchWithTimeout(AOP_WIKI_API+'/api-git/marvinm2/AOPWikiQueries/get-aop-by-id?id='+e,{headers:{Accept:'application/json'}},12000);if(!t.ok)throw new Error('API error');const n=await t.json(),a=Array.isArray(n)?n[0]:n;if(!a)throw new Error('No data');const s=aopGetCurrent();if(!s)return;s.aopWikiId=e;let l=60,o=100,r=140;(a.Stressor||a.stressor)&&(s.nodes.push({id:'node-'+Date.now()+'-s',type:'stressor',label:a.Stressor||a.stressor,description:'',x:o,y:l,w:200,h:80,evidenceRefs:[],aopWikiId:e}),l+=r);(a.MIE||a.mie)&&(s.nodes.push({id:'node-'+Date.now()+'-m',type:'mie',label:a.MIE||a.mie,description:'',x:o,y:l,w:200,h:80,evidenceRefs:[],aopWikiId:e}),l+=r);const c=a.KEs||a.keyEvents||a.KeyEvents||[];Array.isArray(c)&&c.forEach(i=>{const d=typeof i==='string'?i:(i.title||i.name||i.label||'KE');s.nodes.push({id:'node-'+Date.now()+'-k',type:'ke',label:d,description:'',x:o,y:l,w:200,h:80,evidenceRefs:[],aopWikiId:e});l+=r});(a.AO||a.ao||a.AdverseOutcome||a.adverseOutcome)&&s.nodes.push({id:'node-'+Date.now()+'-a',type:'ao',label:a.AO||a.ao||a.AdverseOutcome||a.adverseOutcome,description:'',x:o,y:l,w:200,h:80,evidenceRefs:[],aopWikiId:e});const p=[...s.nodes].filter(x=>x.aopWikiId===e);for(let i=0;i<p.length-1;i++){const d=p[i],m=p[i+1];s.edges.push({id:'edge-'+Date.now()+Math.random().toString(36).slice(2,6),sourceId:d.id,targetId:m.id,label:'',style:'solid'})}aopSaveNow();aopRender();aopFitToScreen();aopWikiClose();$('aopStatus').textContent='已导入 AOP '+e}catch(t){$('aopWikiResults').innerHTML='<p style="color:#be123c">导入失败：'+esc(t.message||'网络错误')+'</p>'}}

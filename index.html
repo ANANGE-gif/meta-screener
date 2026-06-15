@@ -610,6 +610,10 @@ conference abstract</textarea></div>
 	  <button onclick="aopZoomOut()" class="gray">🔍−</button>
 	  <button onclick="aopFitToScreen()" class="gray">适应</button>
 	  <span class="aop-toolbar-sep"></span>
+	  <span class="aop-toolbar-sep"></span>
+	  <button onclick="aopInferFromLiterature()" class="y">🧠 文献推断AOP</button>
+	  <button onclick="aopAutoMatchLiterature()" class="g">🔗 自动匹配证据</button>
+	  <span class="aop-toolbar-sep"></span>
 	  <button onclick="aopShowWikiSearch()" class="g">🔍 AOP-Wiki</button>
 	  <button onclick="aopExportSVG()" class="gray" style="font-size:11px">📥 SVG</button>
 	  <button onclick="aopExportPNG()" class="gray" style="font-size:11px">🖼 PNG</button>
@@ -617,6 +621,27 @@ conference abstract</textarea></div>
 	</div>
 	
 	<!-- SVG Canvas -->
+	<div id="aopEmptyState" style="position:relative;padding:60px 20px;text-align:center;background:#fafcff;border:2px dashed #e2e8f0;border-radius:10px;margin-bottom:10px">
+	  <h2 style="color:#0b4f79;margin:0 0 8px">🧬 AOP Builder — 构建你的不良结局路径</h2>
+	  <p class="muted" style="margin:0 0 20px">从头构建毒性通路，将每个节点与文献证据关联，导出为论文级别的图表</p>
+	  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+	    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:16px;width:240px">
+	      <b style="color:#3b82f6">🧠 从文献推断</b>
+	      <p style="font-size:12px;color:#64748b">分析已筛选文献的高频术语，自动建议节点</p>
+	      <button onclick="aopInferFromLiterature()" class="y" style="width:100%">开始推断</button>
+	    </div>
+	    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:16px;width:240px">
+	      <b style="color:#16a34a">🔍 搜索AOP-Wiki</b>
+	      <p style="font-size:12px;color:#64748b">从OECD AOP数据库导入已有通路</p>
+	      <button onclick="aopShowWikiSearch()" class="g" style="width:100%">搜索导入</button>
+	    </div>
+	    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:16px;width:240px">
+	      <b style="color:#b45309">✋ 手动构建</b>
+	      <p style="font-size:12px;color:#64748b">点击上方工具栏添加节点，连线完成通路</p>
+	      <button onclick="aopAddNode('mie')" style="background:#ef4444;width:100%;color:#fff">+ 添加 MIE</button>
+	    </div>
+	  </div>
+	</div>
 	<div class="aop-canvas-container" id="aopCanvasContainer">
 	  <svg id="aopCanvas" xmlns="http://www.w3.org/2000/svg">
 	    <defs>
