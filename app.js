@@ -1378,14 +1378,15 @@ async function fetchOpenAlex(meta){
   while((unlimited||allRecords.length<max)&&!fetchAbort){
     updateProgress(allRecords.length,unlimited?0:max,`OpenAlex: ${allRecords.length} 条...`);
     const url=`https://api.openalex.org/works?per-page=${unlimited?perPage:Math.min(perPage,max-allRecords.length)}&cursor=${encodeURIComponent(cursor)}&search=${encodeURIComponent(q)}`;
-    const json=await (await fetch(url)).json();
+    let json;
+    try{json=await (await fetch(url)).json()}catch(e){break} // 单页失败则停，保留已获取结果
     const records=parseOpenAlexJson(json,meta).filter(r=>yearInRange(r.year));
     if(!records.length) break;
     allRecords.push(...records);
     const nextCursor=json.meta?.next_cursor||'';
     if(!nextCursor||nextCursor===cursor) break;
     cursor=nextCursor;
-    await delay(50);
+    await delay(80);
   }
   const result=addRecords(allRecords);
   return {source:'openalex',...result,message:`OpenAlex 获取 ${allRecords.length} 条`};
