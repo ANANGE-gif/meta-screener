@@ -3,3 +3,6 @@ node_modules/
 __pycache__/
 proxy/
 .vercel
+.meta-cache/
+qa-server*.log
+.Rhistory

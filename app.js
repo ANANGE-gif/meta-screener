@@ -1,43 +1,8 @@
 'use strict';
 
-// ===== 反爬保护 =====
-(function(){
-  // 1. 禁用右键
-  document.addEventListener('contextmenu',e=>e.preventDefault());
-  // 2. 禁用拖拽
-  document.addEventListener('dragstart',e=>e.preventDefault());
-  // 3. 封锁快捷键
-  document.addEventListener('keydown',e=>{
-    if(e.ctrlKey&&['s','S','u','U','p','P'].includes(e.key)){e.preventDefault();return false}
-    if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['I','i','C','c','J','j'].includes(e.key))){e.preventDefault();return false}
-  });
-  // 4. DevTools 检测
-  let detections=0, warned=false;
-  function showWarning(){
-    if(warned) return; warned=true;
-    document.body.style.filter='blur(6px)';
-    document.body.style.pointerEvents='none';
-    const ov=document.createElement('div');
-    ov.id='secOv'; ov.innerHTML='<div style="position:fixed;inset:0;z-index:9999999;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:system-ui,sans-serif"><h1 style="font-size:28px;color:#ef4444">&#x26A0;&#xFE0F; 安全警告</h1><p style="font-size:17px;color:#e2e8f0;margin-top:12px">检测到开发者工具已打开</p><p style="font-size:14px;color:#94a3b8;margin-top:4px">请关闭开发者工具后刷新页面继续使用</p></div>';
-    document.body.appendChild(ov);
-    // 持续清理控制台
-    setInterval(()=>{console.clear();console.log('%c关闭开发者工具后刷新页面','color:red;font-size:20px')},500);
-  }
-  // 方法 A: debugger 定时陷阱（DevTools 开着时 debugger 会暂停，耗时明显增加）
-  let debugTimer=setInterval(()=>{
-    const t=performance.now();
-    debugger;
-    if(performance.now()-t>50) detections++;
-    if(detections>=2) showWarning();
-  },12000);
-  // 方法 B: 窗口尺寸差检测
-  let resizeTimer=setInterval(()=>{
-    const d=(window.outerWidth-window.innerWidth)+(window.outerHeight-window.innerHeight);
-    if(d>180) detections++;
-    if(detections>=2) showWarning();
-  },10000);
-})();
-// ======================
+// Legacy single-file build. Anti-debugging code was intentionally removed:
+// it caused false positives, blocked accessibility tools and made production
+// troubleshooting impossible. The modular build in index.html is authoritative.
 
 const KEY='meta_screener_pro_v1';
 const SETTINGS_KEY='meta_screener_pro_v1_settings';
@@ -529,14 +494,9 @@ function enterTrial(){
 }
 function isTrial(){return localStorage[LICENSE_KEY]==='trial'}
 
-// === 主激活流程（离线优先，无网也能用）===
-// 管理员可扩充此列表，将新码发给用户
-const OFFLINE_CODES=['META-PRO-2024-FULL','META-PRO-2025-FULL','MAS-2024-TEST01','META-OFFLINE-001'];
-
+// === 旧版单文件激活流程（保留兼容，不再包含前端万能码）===
 function isValidOfflineCode(code){
-  if(OFFLINE_CODES.includes(code)) return true;
-  if(code.startsWith('MAS-')||code.startsWith('META-')) return true;
-  return false;
+  return /^[A-Z0-9][A-Z0-9-]{7,63}$/.test(String(code||'').trim().toUpperCase());
 }
 
 async function activateLicense(){
@@ -558,19 +518,22 @@ async function activateLicense(){
     return;
   }
 
-  // 后台尝试 Supabase 同步（有网则互斥，无网静默跳过）
+  // 必须由授权服务器确认，不能在静态前端接受任意前缀。
   try{
     const row=await queryLicenseFromSupabase(code);
-    if(row){
-      if(row.used&&row.device_id!==deviceId){
-        $('activateError').textContent='此激活码已被其他用户在线激活';
-        return;
-      }
-      if(!row.used){
-        await claimLicenseOnSupabase(code,deviceId);
-      }
+    if(!row){
+      $('activateError').textContent='激活码不存在或已失效';
+      return;
     }
-  }catch(e){/* 网络不通，走纯离线 */}
+    if(row.used&&row.device_id!==deviceId){
+      $('activateError').textContent='此激活码已被其他设备激活';
+      return;
+    }
+    if(!row.used){
+      const claimed=await claimLicenseOnSupabase(code,deviceId);
+      if(!claimed){$('activateError').textContent='激活码绑定失败，请稍后重试';return}
+    }
+  }catch(e){$('activateError').textContent='无法连接授权服务器，请检查网络';return}
 
   // 激活成功
   usedCodes[code]=deviceId;

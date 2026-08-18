@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Meta分析文献筛选器 Pro</title>
-<link rel="stylesheet" href="style.css">
+<title>MetaEvidence · Systematic Review Studio</title>
+<link rel="stylesheet" href="style.css?v=20260818c">
 </head>
 <body>
 
@@ -37,8 +37,8 @@
       <circle cx="82" cy="88" r="6" fill="#3b82f6" opacity=".9" filter="url(#glow)"/>
       <text x="60" y="65" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">M</text>
     </svg>
-    <h1 class="splash-title">Meta分析文献筛选器 Pro</h1>
-    <p class="splash-version">v2.0 · 科研辅助工具</p>
+    <h1 class="splash-title">MetaEvidence</h1>
+    <p class="splash-version">v4.0 · Systematic Review Studio</p>
     <p class="splash-sub">系统综述与 Meta 分析文献筛选平台</p>
   </div>
   <div class="splash-progress">
@@ -48,71 +48,64 @@
 </div>
 
 <!-- Auth Overlay -->
-<div id="authOverlay" class="overlay">
-  <div class="overlay-box auth-box">
-    <div class="auth-icon">
-      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
-        <circle cx="24" cy="24" r="22" fill="none" stroke="#3b82f6" stroke-width="2" opacity=".3"/>
-        <circle cx="24" cy="24" r="15" fill="none" stroke="#0f6b9e" stroke-width="2.5" stroke-dasharray="4 3"/>
-        <circle cx="24" cy="24" r="7" fill="#0f6b9e"/>
-        <text x="24" y="28" text-anchor="middle" fill="#fff" font-size="9" font-weight="bold">M</text>
-      </svg>
-    </div>
-    <h2>Meta分析文献筛选器 Pro</h2>
+<div id="authOverlay" class="overlay commercial-auth">
+  <div class="auth-market-shell">
+    <header class="auth-market-nav">
+      <div class="market-brand"><span>ME</span><div><b>MetaEvidence</b><small>Systematic Review Studio</small></div></div>
+      <div class="market-nav-meta"><span>个人专业版</span><a href="#" id="lnkManualAuth">使用指南</a></div>
+    </header>
+    <main class="auth-market-main">
+      <section class="auth-market-copy">
+        <span class="market-eyebrow">为临床研究者与小型课题组打造</span>
+        <h1>把系统评价的每一步，变成清楚、可复核的任务</h1>
+        <p>从研究方案、跨库检索和双阶段筛选，到数据提取、质量评价、Meta 统计与报告归档。没有黑箱统计，也不需要在多个表格和软件之间来回搬运。</p>
+        <div class="market-value-list">
+          <article><i>01</i><div><b>数据留在你的设备</b><span>项目默认保存在本机，可随时完整备份。</span></div></article>
+          <article><i>02</i><div><b>每个结论都能回查</b><span>筛选理由、质量评价和统计参数完整保留。</span></div></article>
+          <article><i>03</i><div><b>统计结果可独立复算</b><span>效应量由确定性公式计算，不由生成式模型编造。</span></div></article>
+        </div>
+        <div class="market-proof">
+          <div><strong>8</strong><span>中英文数据源</span></div>
+          <div><strong>6</strong><span>完整工作阶段</span></div>
+          <div><strong>1</strong><span>项目审计包</span></div>
+        </div>
+        <div class="market-audience"><span>临床医生</span><span>医学研究生</span><span>公卫研究者</span><span>小型课题组</span></div>
+      </section>
 
-    <!-- ===== 主入口：登录 / 注册 ===== -->
-    <div class="auth-tabs">
-      <button type="button" class="auth-tab active" id="tabLoginBtn" onclick="switchAuthTab('login')">登录</button>
-      <button type="button" class="auth-tab" id="tabRegisterBtn" onclick="switchAuthTab('register')">注册</button>
-    </div>
-
-    <!-- Login Form -->
-    <form id="loginForm" class="auth-form" onsubmit="return handleLogin(event)">
-      <div class="auth-input-wrap"><input type="email" id="loginEmail" placeholder="邮箱地址" required autocomplete="email"></div>
-      <div class="auth-input-wrap"><input type="password" id="loginPassword" placeholder="密码" required autocomplete="current-password"></div>
-      <div id="loginError" class="auth-error"></div>
-      <div class="auth-form-actions">
-        <button type="submit" class="auth-btn-primary" id="loginBtn">登录</button>
+      <div class="overlay-box auth-box">
+        <div class="auth-card-head"><span class="auth-card-badge">PRO</span><h2>进入研究工作台</h2><p class="auth-value">登录已有项目，或无需注册体验完整示例。</p></div>
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" id="tabLoginBtn">登录</button>
+          <button type="button" class="auth-tab" id="tabRegisterBtn">注册授权</button>
+        </div>
+        <form id="loginForm" class="auth-form">
+          <div class="auth-input-wrap"><label for="loginEmail">邮箱</label><input type="email" id="loginEmail" placeholder="name@example.com" required autocomplete="email"></div>
+          <div class="auth-input-wrap"><label for="loginPassword">密码</label><input type="password" id="loginPassword" placeholder="请输入密码" required autocomplete="current-password"></div>
+          <div id="loginError" class="auth-error"></div>
+          <div class="auth-form-actions"><button type="submit" class="auth-btn-primary" id="loginBtn">登录工作台</button></div>
+        </form>
+        <form id="registerForm" class="auth-form" style="display:none">
+          <div class="auth-input-wrap"><label for="regEmail">邮箱</label><input type="email" id="regEmail" placeholder="name@example.com" required autocomplete="email"></div>
+          <div class="auth-input-wrap"><label for="regPassword">设置密码</label><input type="password" id="regPassword" placeholder="至少 6 位" required minlength="6" autocomplete="new-password"></div>
+          <div class="auth-input-wrap"><label for="regPasswordConfirm">确认密码</label><input type="password" id="regPasswordConfirm" placeholder="再次输入密码" required minlength="6" autocomplete="new-password"></div>
+          <div class="auth-input-wrap"><label for="regLicense">授权码</label><input type="text" id="regLicense" placeholder="输入购买后获得的授权码" required></div>
+          <div id="registerError" class="auth-error"></div>
+          <div class="auth-form-actions"><button type="submit" class="auth-btn-primary" id="registerBtn">创建专业版账号</button></div>
+        </form>
+        <div class="auth-trial-link"><a href="#" id="lnkTrial">免费体验完整示例 <span>无需注册</span></a></div>
+        <div class="auth-offline-section">
+          <a href="#" class="auth-offline-link">已有离线授权码？在此激活</a>
+          <div id="offlineActivationBox" style="display:none;margin-top:10px">
+            <p class="auth-desc">首次激活需要联网验证，之后可离线使用。</p>
+            <div class="auth-input-wrap"><input type="text" id="licenseInput" placeholder="请输入授权码"></div>
+            <div id="activateError" class="auth-error"></div>
+            <button type="button" class="auth-btn-primary" id="btnOfflineActivate">验证并激活</button>
+          </div>
+        </div>
+        <div class="auth-footer"><span>v4.0</span><span class="auth-dot"></span><span>本地优先</span><span class="auth-dot"></span><span>可审计</span></div>
       </div>
-    </form>
-
-    <!-- Register Form -->
-    <form id="registerForm" class="auth-form" style="display:none" onsubmit="return handleRegister(event)">
-      <div class="auth-input-wrap"><input type="email" id="regEmail" placeholder="邮箱地址" required autocomplete="email"></div>
-      <div class="auth-input-wrap"><input type="password" id="regPassword" placeholder="设置密码（至少6位）" required minlength="6" autocomplete="new-password"></div>
-      <div class="auth-input-wrap"><input type="password" id="regPasswordConfirm" placeholder="确认密码" required minlength="6" autocomplete="new-password"></div>
-      <div class="auth-input-wrap"><input type="text" id="regLicense" placeholder="激活码（必填）" required></div>
-      <div id="registerError" class="auth-error"></div>
-      <div class="auth-form-actions">
-        <button type="submit" class="auth-btn-primary" id="registerBtn">注册</button>
-      </div>
-    </form>
-
-    <!-- 离线激活（无法联网时用） -->
-    <div class="auth-offline-section" style="margin-top:12px;text-align:center">
-      <a href="#" onclick="toggleOfflineActivation();return false" class="auth-offline-link">无法联网？离线激活</a>
-      <div id="offlineActivationBox" style="display:none;margin-top:8px">
-        <p class="auth-desc" style="margin:0 0 8px;font-size:13px;color:#64748b">输入管理员提供的离线激活码</p>
-        <div class="auth-input-wrap"><input type="text" id="licenseInput" placeholder="请输入离线激活码"></div>
-        <div id="activateError" class="auth-error"></div>
-        <button type="button" class="auth-btn-primary" onclick="activateLicense()" style="background:#b45309">离线激活</button>
-      </div>
-    </div>
-
-    <!-- 试用模式 -->
-    <div class="auth-trial-link">
-      <a href="#" onclick="enterTrial();return false">试用模式（功能受限）</a>
-    </div>
-
-    <div class="auth-footer">
-      <span>版本 2.0</span>
-      <span class="auth-dot"></span>
-      <span>仅供科研用途</span>
-      <span class="auth-dot"></span>
-      <span>数据本地存储</span>
-      <span class="auth-dot"></span>
-      <a href="#" onclick="showManual();return false">📖 使用说明书</a>
-    </div>
+    </main>
+    <footer class="auth-market-footer"><span>不是论文代写工具</span><span>统计结果需要研究者复核</span><span>支持完整项目导出与迁移</span></footer>
   </div>
 </div>
 
@@ -141,8 +134,8 @@
       <li>清除浏览器数据会导致记录丢失，请定期使用"备份 JSON"功能</li>
     </ul>
     <div class="actions">
-      <a href="#" onclick="showManual();return false" style="color:#3b82f6;text-decoration:underline;margin-right:16px">📖 完整使用说明书</a>
-      <button onclick="hideHelp()">关闭</button>
+      <a href="#" id="lnkManualHelp" style="color:#3b82f6;text-decoration:underline;margin-right:16px">📖 完整使用说明书</a>
+      <button id="btnHideHelp">关闭</button>
     </div>
   </div>
 </div>
@@ -150,13 +143,13 @@
 <!-- About Overlay -->
 <div id="aboutOverlay" class="overlay" style="display:none">
   <div class="overlay-box">
-    <h2>关于软件</h2>
-    <p><b>Meta分析文献筛选器 Pro</b></p>
-    <p>版本：2.0</p>
-    <p>辅助医学/公共卫生研究人员高效完成系统综述和 Meta 分析的文献初筛工作。</p>
-    <p>支持多数据库联合检索与去重、自动评分与人工复核、人群/动物研究分类。</p>
+    <h2>数据与版本</h2>
+    <p><b>MetaEvidence · Systematic Review Studio</b></p>
+    <p>版本：4.0 Professional</p>
+    <p>面向临床研究者、医学研究生和小型课题组的本地优先系统评价工作台。</p>
+    <p>项目数据默认保存在当前设备；统计结果由确定性公式生成，最终学术判断由研究者负责。</p>
     <p id="aboutLicense" class="muted"></p>
-    <div class="actions"><button onclick="hideAbout()">关闭</button></div>
+    <div class="actions"><button id="btnHideAbout">关闭</button></div>
   </div>
 </div>
 
@@ -164,43 +157,46 @@
 <div id="manualOverlay" class="overlay" style="display:none">
   <div class="overlay-box manual-box">
     <div class="manual-header">
-      <h2>📋 Meta分析文献筛选器 Pro · 使用说明书</h2>
-      <p class="muted">v2.0 · 系统综述与 Meta 分析文献筛选全流程</p>
+      <h2>MetaEvidence · 使用指南</h2>
+      <p class="muted">v4.0 · 系统综述与 Meta 分析工作台</p>
     </div>
     <div class="manual-body">
       <div class="manual-toc">
         <h3>📑 目录</h3>
         <ol>
-          <li><a href="javascript:void(0)" onclick="document.getElementById('m-sec1').scrollIntoView({behavior:'smooth'})">概述与核心功能</a></li>
-          <li><a href="javascript:void(0)" onclick="document.getElementById('m-sec2').scrollIntoView({behavior:'smooth'})">激活与认证（三种方式）</a></li>
-          <li><a href="javascript:void(0)" onclick="document.getElementById('m-sec3').scrollIntoView({behavior:'smooth'})">工作区概览</a></li>
-          <li><a href="javascript:void(0)" onclick="document.getElementById('m-sec4').scrollIntoView({behavior:'smooth'})">数据库检索</a></li>
-          <li><a href="javascript:void(0)" onclick="document.getElementById('m-sec5').scrollIntoView({behavior:'smooth'})">手动导入文献</a></li>
-          <li><a href="javascript:void(0)" onclick="document.getElementById('m-sec6').scrollIntoView({behavior:'smooth'})">自动评分与筛选</a></li>
-          <li><a href="javascript:void(0)" onclick="document.getElementById('m-sec7').scrollIntoView({behavior:'smooth'})">PRISMA 2020 流程图</a></li>
-          <li><a href="javascript:void(0)" onclick="document.getElementById('m-sec8').scrollIntoView({behavior:'smooth'})">数据导出</a></li>
-          <li><a href="javascript:void(0)" onclick="document.getElementById('m-sec9').scrollIntoView({behavior:'smooth'})">高级配置</a></li>
-          <li><a href="javascript:void(0)" onclick="document.getElementById('m-sec10').scrollIntoView({behavior:'smooth'})">常见问题</a></li>
+          <li><a href="#m-sec1">概述与核心功能</a></li>
+          <li><a href="#m-sec2">激活与认证（三种方式）</a></li>
+          <li><a href="#m-sec3">工作区概览</a></li>
+          <li><a href="#m-sec4">数据库检索</a></li>
+          <li><a href="#m-sec5">手动导入文献</a></li>
+          <li><a href="#m-sec6">自动评分与筛选</a></li>
+          <li><a href="#m-sec7">PRISMA 2020 流程图</a></li>
+          <li><a href="#m-sec8">数据导出</a></li>
+          <li><a href="#m-sec9">高级配置</a></li>
+          <li><a href="#m-sec10">常见问题</a></li>
         </ol>
       </div>
 
       <h2 id="m-sec1">1. 概述与核心功能</h2>
-      <p><b>Meta分析文献筛选器 Pro</b> 是一个纯浏览器端运行的文献初筛工具，专为系统综述与 Meta 分析设计。数据全部存储在本地浏览器，无需部署服务器。</p>
+      <p><b>MetaEvidence</b> 是一个本地优先的系统评价与 Meta 分析工作台。研究方案、检索、筛选、全文与质量、提取与统计、报告交付分别在独立任务页完成；项目可随时完整备份。</p>
       <h3>核心功能一览</h3>
       <table><tr><th>功能</th><th>说明</th></tr>
       <tr><td>多数据库直连检索</td><td>PubMed、Europe PMC、Crossref、OpenAlex 一键检索</td></tr>
       <tr><td>中文数据库辅助</td><td>为 CNKI、万方、维普、SinoMed 自动生成检索式</td></tr>
       <tr><td>自动评分筛选</td><td>基于关键词规则对人群 / 动物 / 体外研究自动打分</td></tr>
       <tr><td>PRISMA 2020 流程图</td><td>自动生成可导出 SVG/PNG 的筛选流程图</td></tr>
+      <tr><td>结构化数据提取</td><td>支持二分类、连续型和文献已报告效应值，保留研究与亚组标识</td></tr>
+      <tr><td>质量评价</td><td>支持 RoB 2、ROBINS-I、NOS、SYRCLE 和 GRADE</td></tr>
+      <tr><td>统计分析与绘图</td><td>OR/RR/RD/MD/SMD、固定/随机效应、亚组、敏感性、Egger、森林图和漏斗图</td></tr>
       <tr><td>去重合并</td><td>跨数据库自动去重（PMID / DOI / 标题+年份）</td></tr>
       <tr><td>文件导入</td><td>支持 RIS、BibTeX、CSV、NBIB 格式批量导入</td></tr>
       <tr><td>多格式导出</td><td>支持 JSON、CSV 导出，兼容 EndNote / Zotero / Excel</td></tr>
-      <tr><td>离线可用</td><td>离线激活码模式，无需网络即可使用完整功能</td></tr></table>
+      <tr><td>授权方式</td><td>账号或激活码在线验证；检索数据仍保存在本机浏览器</td></tr></table>
 
       <h2 id="m-sec2">2. 激活与认证</h2>
       <p>首次使用需要激活。提供三种方式：</p>
       <div class="manual-step"><p><span class="manual-num">A</span><b>在线注册 + 激活码</b></p><p>点击「注册」选项卡，填写邮箱、密码和激活码。注册后检查邮箱确认链接，然后登录即可。激活码一码一人，由管理员分发。</p><p class="manual-tip">💡 在线模式支持跨设备数据同步。</p></div>
-      <div class="manual-step"><p><span class="manual-num">B</span><b>离线激活</b></p><p>点击「无法联网？离线激活」链接，输入管理员提供的离线激活码。<code>META-PRO-*</code> / <code>MAS-*</code> 格式均支持。</p><p class="manual-tip">💡 离线激活完全在本地验证，无需网络，适合机构内网环境。</p></div>
+      <div class="manual-step"><p><span class="manual-num">B</span><b>激活码授权</b></p><p>点击「使用激活码」，输入管理员提供的有效激活码；首次绑定需要连接授权服务器。</p><p class="manual-tip">💡 不再使用写在前端代码中的通用离线码，避免授权被任意绕过。</p></div>
       <div class="manual-step"><p><span class="manual-num">C</span><b>试用模式</b></p><p>点击「先试用看看」，无需任何激活码。限制：每次检索最多返回 <b>15 条</b> 记录。</p></div>
       <p class="manual-warn">⚠️ 清除浏览器数据会导致激活状态丢失。建议定期导出数据备份。</p>
 
@@ -214,50 +210,32 @@
       <tr><td>文献列表</td><td>页面中部</td><td>展示文献卡片，含评分、决策按钮、来源标签</td></tr>
       <tr><td>分页 / 统计栏</td><td>列表底部</td><td>总记录数、筛选计数、翻页、导出按钮</td></tr>
       <tr><td>PRISMA 流程图</td><td>页面底部</td><td>自动更新的 PRISMA 2020 流程图</td></tr></table>
+      <p>页面使用“方案 → 检索 → 筛选 → 全文与质量 → 提取与分析 → 报告”的固定导航。首次分析建议依次完成，后续可通过顶部胶囊导航快速跳转。</p>
 
       <h2 id="m-sec4">4. 数据库检索</h2>
       <h3>4.1 构建检索式（PICO 框架）</h3>
       <p>在工作区上方按字段填写检索词，每行一个词组，同组内多个词用 <b>分号 ;</b> 或逗号分隔：</p>
-      <table><tr><th>字段</th><th>含义</th><th>示例</th></tr>
-      <tr><td>人群 (Population)</td><td>研究对象</td><td><code>diabetes; type 2 diabetes</code></td></tr>
-      <tr><td>暴露/干预 (Exposure)</td><td>处理或暴露因素</td><td><code>metformin; "glucophage"</code></td></tr>
-      <tr><td>结局 (Outcome)</td><td>关注的结局指标</td><td><code>mortality; HbA1c</code></td></tr>
-      <tr><td>研究设计 (Design)</td><td>文献类型限制</td><td><code>RCT; "randomized controlled"</code></td></tr>
-      <tr><td>年份范围</td><td>发表年份</td><td><code>2015</code> — <code>2025</code></td></tr></table>
+      <table><tr><th>字段</th><th>含义</th><th>示例</th></tr><tr><td>人群 (Population)</td><td>研究对象</td><td><code>diabetes; type 2 diabetes</code></td></tr><tr><td>暴露/干预 (Exposure)</td><td>处理或暴露因素</td><td><code>metformin; "glucophage"</code></td></tr><tr><td>结局 (Outcome)</td><td>关注的结局指标</td><td><code>mortality; HbA1c</code></td></tr><tr><td>研究设计 (Design)</td><td>文献类型限制</td><td><code>RCT; "randomized controlled"</code></td></tr><tr><td>年份范围</td><td>发表年份</td><td><code>2015</code> — <code>2025</code></td></tr></table>
       <p>检索模式三种：<b>宽检索</b>（P+E）、<b>中检索</b>（P+E+O）、<b>严格检索</b>（P+E+O+D）。建议先用宽检索，再用筛选器逐步缩小范围。</p>
       <h3>4.2 直连数据库</h3>
-      <table><tr><th>数据库</th><th>类型</th><th>说明</th></tr>
-      <tr><td>PubMed</td><td><span class="badge-green">直连</span></td><td>Entrez API，支持完整 MeSH 检索式</td></tr>
-      <tr><td>Europe PMC</td><td><span class="badge-green">直连</span></td><td>欧洲 PMC API，补充 PubMed 未收录文献</td></tr>
-      <tr><td>Crossref</td><td><span class="badge-green">直连</span></td><td>侧重论文元数据和 DOI 检索</td></tr>
-      <tr><td>OpenAlex</td><td><span class="badge-green">直连</span></td><td>开放学术图谱，覆盖面广</td></tr></table>
+      <table><tr><th>数据库</th><th>类型</th><th>说明</th></tr><tr><td>PubMed</td><td><span class="badge-green">直连</span></td><td>Entrez API，支持完整 MeSH 检索式</td></tr><tr><td>Europe PMC</td><td><span class="badge-green">直连</span></td><td>欧洲 PMC API，补充 PubMed 未收录文献</td></tr><tr><td>Crossref</td><td><span class="badge-green">直连</span></td><td>侧重论文元数据和 DOI 检索</td></tr><tr><td>OpenAlex</td><td><span class="badge-green">直连</span></td><td>开放学术图谱，覆盖面广</td></tr></table>
       <h3>4.3 中文数据库辅助</h3>
       <p>CNKI、万方、维普、SinoMed 不直连，工具会：① 自动生成适配检索式；② 提供一键跳转链接；③ 结果可导出后通过「文件导入」回到筛选器。</p>
 
       <h2 id="m-sec5">5. 手动导入文献</h2>
-      <table><tr><th>格式</th><th>来源</th><th>操作</th></tr>
-      <tr><td>RIS</td><td>EndNote, Zotero, Mendeley, CNKI</td><td>点击「📥 导入」→ 选择 .ris 文件</td></tr>
-      <tr><td>BibTeX</td><td>LaTeX, Google Scholar</td><td>点击「📥 导入」→ 选择 .bib 文件</td></tr>
-      <tr><td>NBIB</td><td>PubMed 导出</td><td>点击「📥 导入」→ 选择 .nbib 文件</td></tr>
-      <tr><td>CSV</td><td>Excel / Google Sheets</td><td>点击「📥 导入」→ 选择 .csv 文件</td></tr>
-      <tr><td>JSON</td><td>本工具导出的备份</td><td>点击「📥 导入」→ 选择 .json 文件</td></tr></table>
+      <table><tr><th>格式</th><th>来源</th><th>操作</th></tr><tr><td>RIS</td><td>EndNote, Zotero, Mendeley, CNKI</td><td>点击「📥 导入」→ 选择 .ris 文件</td></tr><tr><td>BibTeX</td><td>LaTeX, Google Scholar</td><td>点击「📥 导入」→ 选择 .bib 文件</td></tr><tr><td>NBIB</td><td>PubMed 导出</td><td>点击「📥 导入」→ 选择 .nbib 文件</td></tr><tr><td>CSV</td><td>Excel / Google Sheets</td><td>点击「📥 导入」→ 选择 .csv 文件</td></tr><tr><td>JSON</td><td>本工具导出的备份</td><td>点击「📥 导入」→ 选择 .json 文件</td></tr></table>
       <p>导入时自动去重（PMID / DOI / 标题+年份合并）。</p>
 
       <h2 id="m-sec6">6. 自动评分与筛选</h2>
       <h3>6.1 研究模式</h3>
-      <table><tr><th>模式</th><th>评分依据</th></tr>
-      <tr><td>人群研究 (Human)</td><td>匹配人群词得正分，动物词得负分；匹配暴露/结局词加分</td></tr>
-      <tr><td>动物研究 (Animal)</td><td>匹配动物词（rat / mouse / rabbit 等）得正分；匹配人群词得负分</td></tr>
-      <tr><td>体外研究 (In Vitro)</td><td>匹配细胞系 / Western Blot / PCR / ELISA 等体外标记词得正分</td></tr></table>
+      <table><tr><th>模式</th><th>评分依据</th></tr><tr><td>人群研究 (Human)</td><td>匹配人群词得正分，动物词得负分；匹配暴露/结局词加分</td></tr><tr><td>动物研究 (Animal)</td><td>匹配动物词（rat / mouse / rabbit 等）得正分；匹配人群词得负分</td></tr><tr><td>体外研究 (In Vitro)</td><td>匹配细胞系 / Western Blot / PCR / ELISA 等体外标记词得正分</td></tr></table>
       <h3>6.2 决策标记</h3>
-      <table><tr><th>标记</th><th>含义</th></tr>
-      <tr><td>🟢 建议纳入</td><td>自动评分高于入围阈值</td></tr>
-      <tr><td>🔴 建议排除</td><td>自动评分低于排除阈值</td></tr>
-      <tr><td>🔵 最终纳入</td><td>人工确认纳入（点击 ✅）</td></tr>
-      <tr><td>⚪ 最终排除</td><td>人工确认排除（点击 ❌），需填写排除原因</td></tr>
-      <tr><td>🟡 待人工判断</td><td>评分在中间区间，需人工阅读决定</td></tr></table>
+      <table><tr><th>标记</th><th>含义</th></tr><tr><td>🟢 建议纳入</td><td>自动评分高于入围阈值</td></tr><tr><td>🔴 建议排除</td><td>自动评分低于排除阈值</td></tr><tr><td>🔵 最终纳入</td><td>人工确认纳入</td></tr><tr><td>⚪ 最终排除</td><td>人工确认排除，需填写排除原因</td></tr><tr><td>🟡 待人工判断</td><td>评分在中间区间，需人工阅读决定</td></tr></table>
 
-      <h2 id="m-sec7">7. PRISMA 2020 流程图</h2>
+      <h2 id="m-sec7">7. 全文、质量评价与统计分析</h2>
+      <p>在全文复筛区记录全文状态、排除理由和原文定位；最终纳入研究可同步到偏倚风险评价和数据提取表。根据研究设计选择 RoB 2、ROBINS-I、NOS 或 SYRCLE，并按结局完成 GRADE 证据分级。</p>
+      <p>数据提取支持二分类结局、连续型结局和文献已报告效应值。完成录入后选择固定效应或随机效应模型，系统生成合并效应、95% CI、Q、I²、τ²、预测区间、亚组分析、逐一剔除敏感性分析、Egger 检验、森林图和漏斗图。</p>
+      <h3>PRISMA 2020 流程图</h3>
       <p>页面底部自动维护符合 <b>PRISMA 2020</b> 标准的筛选流程图：</p>
       <ul>
         <li><b>自动计数</b>：识别 → 去重 → 筛选 → 检索 → 纳入，各环节数字自动更新</li>
@@ -267,18 +245,11 @@
       </ul>
 
       <h2 id="m-sec8">8. 数据导出</h2>
-      <table><tr><th>格式</th><th>操作</th><th>用途</th></tr>
-      <tr><td>JSON</td><td>「📤 导出 JSON」</td><td>完整备份，含评分、决策、来源等；可重新导入恢复</td></tr>
-      <tr><td>CSV</td><td>「📤 导出 CSV」</td><td>Excel 兼容，字段：决策、评分、类型、来源、PMID、DOI、标题等</td></tr></table>
+      <table><tr><th>格式</th><th>操作</th><th>用途</th></tr><tr><td>JSON</td><td>「备份 JSON」</td><td>完整项目备份，含方案、记录、提取表、质量评价和分析设置</td></tr><tr><td>CSV</td><td>「导出 CSV」或“导出提取 CSV”</td><td>题录筛选结果或原始提取数据，兼容 Excel</td></tr><tr><td>HTML / PDF</td><td>项目报告区</td><td>导出可编辑 HTML，或打印为 PDF 归档</td></tr><tr><td>PNG</td><td>图表区</td><td>森林图、漏斗图和 PRISMA 图</td></tr></table>
 
       <h2 id="m-sec9">9. 高级配置</h2>
       <h3>9.1 评分调参</h3>
-      <table><tr><th>参数</th><th>默认值</th><th>作用</th></tr>
-      <tr><td>入围阈值 (IncCut)</td><td>3</td><td>评分 ≥ 此值 → 建议纳入</td></tr>
-      <tr><td>排除阈值 (ExcCut)</td><td>-3</td><td>评分 ≤ 此值 → 建议排除</td></tr>
-      <tr><td>标题乘数</td><td>3</td><td>标题命中关键词的权重倍率</td></tr>
-      <tr><td>协同加分</td><td>1</td><td>P+E 同时出现额外加分</td></tr>
-      <tr><td>排除罚分</td><td>-2</td><td>命中排除词时的罚分</td></tr></table>
+      <table><tr><th>参数</th><th>默认值</th><th>作用</th></tr><tr><td>入围阈值 (IncCut)</td><td>3</td><td>评分 ≥ 此值 → 建议纳入</td></tr><tr><td>排除阈值 (ExcCut)</td><td>-3</td><td>评分 ≤ 此值 → 建议排除</td></tr><tr><td>标题乘数</td><td>3</td><td>标题命中关键词的权重倍率</td></tr><tr><td>协同加分</td><td>1</td><td>P+E 同时出现额外加分</td></tr><tr><td>排除罚分</td><td>-2</td><td>命中排除词时的罚分</td></tr></table>
       <h3>9.2 备份与恢复</h3>
       <ol><li>导出 JSON → 保存到安全位置</li><li>需要恢复时 → 导入该 JSON 文件</li><li>新设备上导入 JSON + 重新激活即可继续工作</li></ol>
 
@@ -294,7 +265,7 @@
       <h3>Q: 支持多少条文献？</h3>
       <p>浏览器 localStorage 通常限制 5-10 MB，约可存储数千条完整记录。建议大数据集分批次处理。</p>
     </div>
-    <div class="actions"><button onclick="hideManual()">关闭</button></div>
+    <div class="actions"><button id="btnHideManual">关闭</button></div>
   </div>
 </div>
 
@@ -303,43 +274,90 @@
 
 <div class="navbar">
 <div class="navbar-brand">
-  <h1>Meta分析文献筛选器 Pro</h1>
-  <span class="navbar-version">v2.2</span>
+  <span class="navbar-logo">ME</span>
+  <div><h1>MetaEvidence</h1><small>Systematic Review Studio</small></div>
+  <span class="navbar-version">PRO</span>
 </div>
   <div class="navbar-actions">
-    <a href="#" onclick="showManual();return false" style="color:#93c5fd;text-decoration:none;font-size:0.9rem;padding:6px 12px">📖 说明书</a>
-    <button onclick="showHelp()">帮助</button>
-    <button onclick="showAbout()">关于</button>
-    <button onclick="handleLogout()">退出登录</button>
+    <span class="save-indicator"><i></i>本机已保存</span>
+    <a href="#" id="lnkManual">使用指南</a>
+    <button id="btnHelp">帮助</button>
+    <button id="btnAbout">数据与版本</button>
+    <button id="btnLogout" class="account-button">退出</button>
   </div>
 </div>
-	
-	<section class="hero">
-  <div class="hero-glow"></div>
-  <div class="hero-grid">
-    <div class="hero-content">
-      <span class="hero-badge">v2.0 Pro · 科研辅助软件</span>
-      <h2 class="hero-title">让 Meta 分析文献初筛，像正式软件一样高效完成</h2>
-      <p class="hero-desc">支持多数据库联合检索、自动评分筛选、中文数据库辅助检索，以及人群/动物双轨分析，帮助系统综述与 Meta 分析更快进入可复核工作流。</p>
-      <div class="hero-actions">
-        <a href="#workspace" class="hero-cta">开始使用</a>
-        <span class="hero-note">本地运行 · 无需部署 · 数据仅保存在本机浏览器</span>
-      </div>
+
+<section class="product-home" id="projectHome">
+  <div class="product-home-copy">
+    <span class="product-kicker">当前项目 · 项目控制台</span>
+    <h2>今天只推进下一件关键任务</h2>
+    <p>系统会收起无关步骤，只展示当前阶段、待复核事项和可交付成果。你负责学术判断，工作台负责记录、计算和归档。</p>
+    <div class="product-home-actions">
+      <button type="button" class="g product-primary" id="btnContinueProject">继续下一任务</button>
+      <button type="button" id="btnNewProject">新建项目</button>
+      <button type="button" class="quiet-button" id="btnHomeDemo">打开示例项目</button>
     </div>
-    <div class="hero-panel">
-      <div class="hero-stat"><b>4</b><span>直连数据库</span></div>
-      <div class="hero-stat"><b>4</b><span>中文库辅助</span></div>
-      <div class="hero-stat"><b>双轨</b><span>人群 / 动物评分</span></div>
-      <div class="hero-stat"><b>本地</b><span>授权与数据存储</span></div>
+    <div class="dashboard-metrics" aria-label="项目关键指标">
+      <div><span>题录</span><strong id="dashboardRecordCount">0</strong><small>去重后记录</small></div>
+      <div><span>已决策</span><strong id="dashboardDecisionCount">0</strong><small>最终纳入或排除</small></div>
+      <div><span>纳入研究</span><strong id="dashboardIncludedCount">0</strong><small>进入数据提取</small></div>
+      <div><span>报告</span><strong id="dashboardReportState">待生成</strong><small>可交付状态</small></div>
     </div>
+  </div>
+  <div class="project-overview" aria-label="当前项目概览">
+    <div class="project-overview-head"><span id="projectModeBadge" class="project-mode">真实项目</span><span id="projectProgressText">0/6 阶段完成</span></div>
+    <h3 id="currentProjectName">尚未命名的项目</h3>
+    <div class="project-progress"><span id="projectProgressBar"></span></div>
+    <p id="projectNextHint">先填写研究方案与 PICOS。</p>
+    <button type="button" class="project-next" id="btnNextAction" data-target="#protocol-workspace"><span>下一步</span><b id="nextActionText">填写研究方案</b></button>
   </div>
 </section>
 
-<p class="sub">支持 <b>PubMed / Europe PMC / Crossref / OpenAlex</b> 一键检索，为 <b>CNKI、万方、维普、SinoMed/CBM</b> 生成专用检索式辅助导入。</p>
+<section class="assurance-strip" aria-label="结果可信度保障">
+  <div><i>✓</i><span><b>人工结论受保护</b><small>自动评分不会覆盖最终纳排决定</small></span></div>
+  <div><i>ƒ</i><span><b>确定性统计内核</b><small>效应量和区间可由第三方复算</small></span></div>
+  <div><i>↗</i><span><b>完整项目可迁移</b><small>方案、题录、评价和分析一键备份</small></span></div>
+</section>
+
+<nav class="workflow-nav" aria-label="系统评价工作流">
+  <a href="#dashboard" data-page="dashboard"><i>⌂</i><span>项目总览</span></a><a href="#protocol-workspace" data-stage="0"><i>1</i><span>研究方案</span></a><a href="#workspace" data-stage="1"><i>2</i><span>文献检索</span></a><a href="#screening-workspace" data-stage="2"><i>3</i><span>标题摘要筛选</span></a><a href="#quality-workspace" data-stage="3"><i>4</i><span>全文与质量</span></a><a href="#meta-analysis-workspace" data-stage="4"><i>5</i><span>提取与统计</span></a><a href="#review-report" data-stage="5"><i>6</i><span>报告交付</span></a>
+</nav>
+
+<section class="project-cockpit" id="projectCockpit" aria-live="polite">
+  <div><span>当前项目</span><b id="cockpitProjectName">尚未命名的项目</b></div>
+  <div class="cockpit-progress"><span id="cockpitProgressLabel">完成度 0%</span><div><i id="cockpitProgressBar"></i></div></div>
+  <button type="button" class="g" id="btnCockpitNext" data-target="#protocol-workspace">继续：填写研究方案</button>
+</section>
+
+<div class="workflow-heading" id="protocol-workspace">
+  <span>任务 1</span>
+  <div><b>研究方案与 PICOS</b><small>先锁定研究问题、纳排标准和预设结局，减少事后选择偏倚</small></div>
+</div>
+
+<section class="card protocol-card" id="protocolCard">
+  <div class="protocol-head"><div><h2>系统评价研究方案</h2><p>内容自动保存在本机，可随项目备份一并导出。</p></div><div class="protocol-actions"><button type="button" class="y demo-entry" id="btnFullDemo">一键载入完整示例项目</button><span id="protocolSaveState">自动保存</span></div></div>
+  <div class="grid protocol-grid">
+    <div style="grid-column:1/-1"><label for="reviewTitle">项目名称</label><input id="reviewTitle" placeholder="例如：IL-6 多态性与尘肺易感性的系统评价和 Meta 分析"></div>
+    <div style="grid-column:1/-1"><label for="reviewObjective">研究问题 / 主要目标</label><textarea id="reviewObjective" placeholder="清晰描述研究目的和主要假设"></textarea></div>
+    <div><label for="picosPopulation">P · 研究人群</label><textarea id="picosPopulation" placeholder="疾病、年龄、地区等"></textarea></div>
+    <div><label for="picosIntervention">I/E · 干预或暴露</label><textarea id="picosIntervention" placeholder="干预、暴露或预测因素"></textarea></div>
+    <div><label for="picosComparator">C · 对照</label><textarea id="picosComparator" placeholder="安慰剂、非暴露或其他对照"></textarea></div>
+    <div><label for="picosOutcomes">O · 结局</label><textarea id="picosOutcomes" placeholder="主要结局在前，次要结局在后"></textarea></div>
+    <div><label for="picosDesign">S · 研究设计</label><textarea id="picosDesign" placeholder="RCT、队列、病例对照等"></textarea></div>
+    <div><label for="protocolRegistration">注册信息</label><textarea id="protocolRegistration" placeholder="PROSPERO 编号、OSF 地址或内部版本号"></textarea></div>
+    <div><label for="inclusionCriteria">纳入标准</label><textarea id="inclusionCriteria" placeholder="每行一条标准"></textarea></div>
+    <div><label for="exclusionCriteria">排除标准</label><textarea id="exclusionCriteria" placeholder="每行一条标准"></textarea></div>
+  </div>
+</section>
+
+<div class="workflow-heading" id="workspace">
+  <span>任务 2 · 1/3</span>
+  <div><b>选择检索范围</b><small>确定研究对象和目标数据库</small></div>
+</div>
 
 <div class="card grid">
   <div class="mode">
-    <label>检索模式</label>
+    <label for="mode">检索模式</label>
     <select id="mode">
       <option value="wide">宽检索：疾病/人群 AND 暴露/基因</option>
       <option value="middle">中等检索：再加入结局关键词</option>
@@ -348,14 +366,14 @@
     <p class="muted">建议先宽检索，再用下方自动评分 + 人工复核做筛选。</p>
   </div>
   <div class="mode">
-    <label>研究对象模式</label>
+    <label for="studyMode">研究对象模式</label>
     <select id="studyMode">
       <option value="human">仅人群研究</option>
       <option value="animal">仅动物研究</option>
       <option value="in_vitro">仅体外研究</option>
       <option value="both">人群 + 动物（双轨评分）</option>
     </select>
-    <p class="muted">切换后自动重评分并过滤。体外研究可识别细胞实验、Western Blot、PCR 等。</p>
+    <p class="muted">切换后自动重评分并过滤；类型“不明确”的记录始终保留供人工复核，避免静默漏文献。体外研究可识别细胞实验、Western Blot、PCR 等。</p>
   </div>
   <div class="mode" style="grid-column:1/-1">
     <label>可直连数据库（一键获取）</label>
@@ -377,47 +395,64 @@
     <p class="note">勾选后点击"联网获取"将生成各平台专用检索式，您在对应网站检索并导出题录文件后导入本工具。</p>
     <div class="cn-kw-section" style="margin-top:10px;border-top:1px dashed #dbeafe;padding-top:10px">
       <label style="color:#0b4f79">中文检索关键词（用于生成中文数据库检索式，同义词用 ; 分隔，每行一组概念）</label>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px">
-        <div><label>中文疾病/人群</label><textarea id="cnPop" style="min-height:60px" placeholder="所有同义词放一行，用 ; 分隔&#10;每行是一个AND概念组">尘肺; 矽肺; 煤工尘肺; 职业性肺病</textarea></div>
-        <div><label>中文动物/模型</label><textarea id="cnAnimal" style="min-height:60px" placeholder="仅"动物模式"时生效&#10;小鼠; 大鼠; 动物模型">小鼠; 大鼠; 动物模型; 斑马鱼</textarea></div>
-        <div><label>中文暴露/基因</label><textarea id="cnExpo" style="min-height:60px" placeholder="所有同义词放一行&#10;每行是一个AND概念组">白细胞介素-6; IL-6; 基因多态性; 细胞因子</textarea></div>
+      <div class="cn-keyword-grid">
+        <div><label for="cnPop">中文疾病/人群</label><textarea id="cnPop" style="min-height:60px" placeholder="所有同义词放一行，用 ; 分隔&#10;每行是一个AND概念组">尘肺; 矽肺; 煤工尘肺; 职业性肺病</textarea></div>
+        <div><label for="cnAnimal">中文动物/模型</label><textarea id="cnAnimal" style="min-height:60px" placeholder="仅在动物模式时生效&#10;小鼠; 大鼠; 动物模型">小鼠; 大鼠; 动物模型; 斑马鱼</textarea></div>
+        <div><label for="cnExpo">中文暴露/基因</label><textarea id="cnExpo" style="min-height:60px" placeholder="所有同义词放一行&#10;每行是一个AND概念组">白细胞介素-6; IL-6; 基因多态性; 细胞因子</textarea></div>
       </div>
       <p class="note">留空则自动使用上方英文关键词（但英文词在中文数据库通常检索不到结果）。</p>
     </div>
   </div>
 </div>
 
+<div class="workflow-heading">
+  <span>任务 2 · 2/3</span>
+  <div><b>填写检索条件</b><small>当前内容为示例，可直接替换为你的研究主题</small></div>
+</div>
+
 <div class="card grid">
-  <div><label>疾病/人群关键词（同义词用 ; 分隔，每行一组概念）</label><textarea id="pop">pneumoconiosis; silicosis; coal workers pneumoconiosis</textarea></div>
-  <div><label>动物模型/动物种属关键词</label><textarea id="animalTerms">mouse; mice; rat; rabbit
+  <div><label for="pop">疾病/人群关键词（同义词用 ; 分隔，每行一组概念）</label><textarea id="pop">pneumoconiosis; silicosis; coal workers pneumoconiosis</textarea></div>
+  <div><label for="animalTerms">动物模型/动物种属关键词</label><textarea id="animalTerms">mouse; mice; rat; rabbit
 murine; rodent; animal model
 in vivo; zebrafish</textarea></div>
-  <div><label>暴露/基因/因素关键词</label><textarea id="expo">IL-6; interleukin-6; interleukin 6</textarea></div>
-  <div><label>结局关键词（中等/严格检索时使用）</label><textarea id="outcome">risk; susceptibility; genotype; allele; odds ratio</textarea></div>
-  <div><label>原始研究设计关键词（严格检索时使用）</label><textarea id="design">case-control; case control
+  <div><label for="expo">暴露/基因/因素关键词</label><textarea id="expo">IL-6; interleukin-6; interleukin 6</textarea></div>
+  <div><label for="outcome">结局关键词（中等/严格检索时使用）</label><textarea id="outcome">risk; susceptibility; genotype; allele; odds ratio</textarea></div>
+  <div><label for="design">原始研究设计关键词（严格检索时使用）</label><textarea id="design">case-control; case control
 cohort
 cross-sectional; observational study</textarea></div>
-  <div><label>年份起</label><input id="yf" placeholder="如 1990" value="1990"></div>
-  <div><label>年份止</label><input id="yt" placeholder="如 2026" value="2026"></div>
-  <div><label>目标获取数量（0=不限）</label><input id="max" type="number" value="200" min="0"></div>
-  <div><label>排序</label><select id="sort"><option value="relevance">相关性</option><option value="pub date">发表时间</option></select></div>
+  <div><label for="yf">年份起</label><input id="yf" placeholder="如 1990" value="1990"></div>
+  <div><label for="yt">年份止</label><input id="yt" placeholder="如 2026" value="2026"></div>
+  <div><label for="max">目标获取数量（0=不限；试用模式每库最多 15 条）</label><input id="max" type="number" value="200" min="0"></div>
+  <div><label for="sort">排序</label><select id="sort"><option value="relevance">相关性</option><option value="pub date">发表时间</option></select></div>
+</div>
+
+<div class="workflow-heading">
+  <span>任务 2 · 3/3</span>
+  <div><b>生成并执行检索</b><small>建议先检查检索式，再联网获取题录</small></div>
 </div>
 
 <div class="card">
   <div class="actions">
-    <button onclick="buildQuery()">生成检索式</button>
-    <button class="g" onclick="fetchSelectedDatabases()">联网获取所选数据库题录</button>
-    <button onclick="stopFetch()" class="r" id="btnStop" style="display:none">停止获取</button>
-    <button onclick="copyQuery('pubmedQuery')">复制 PubMed 检索式</button>
-    <button onclick="copyQuery('genericQuery')">复制通用检索词</button>
-    <button class="gray" onclick="screenAll()">重新评分</button>
+    <button id="btnBuildQuery">生成检索式</button>
+    <button class="g" id="btnFetch">联网获取所选数据库题录</button>
+    <button class="r" id="btnStop" style="display:none">停止获取</button>
+    <button id="btnCopyPubMedQuery">复制 PubMed 检索式</button>
+    <button id="btnCopyEuropePMCQuery">复制 Europe PMC 检索式</button>
+    <button id="btnCopyGenericQuery">复制通用检索词</button>
+    <button class="gray" id="btnRescore">重新评分</button>
   </div>
   <span id="status" class="muted">未检索</span>
+  <p class="search-speed-note">高速检索：四库并行 · 同源缓存 · 自动重试 · 完成一库立即显示结果审计</p>
   <div class="progress-bar" id="progressBar" style="display:none"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
-  <label style="margin-top:10px">PubMed 检索式</label>
+  <div id="searchAuditPanel" class="search-audit" style="display:none"></div>
+  <label style="margin-top:10px" for="pubmedQuery">PubMed 检索式</label>
   <div id="pubmedQuery" class="q"></div>
-  <label style="margin-top:10px">通用检索词（适合 Europe PMC / Crossref / OpenAlex）</label>
+  <label style="margin-top:10px" for="europePmcQuery">Europe PMC 检索式（标题/摘要字段）</label>
+  <div id="europePmcQuery" class="q"></div>
+  <label style="margin-top:10px" for="genericQuery">通用检索词（用于 Crossref / OpenAlex）</label>
   <div id="genericQuery" class="q"></div>
+  <div id="queryLogicPreview" class="logic-preview" aria-live="polite"></div>
+  <p class="query-audit-note"><b>口径提示：</b>PubMed 与 Europe PMC 使用数据库专用字段语法；Crossref 属于元数据相关性匹配，OpenAlex 搜索范围更广。不同数据库之间不应直接要求命中数量相同。</p>
   <div id="cnQueryPanel"></div>
 </div>
 
@@ -449,7 +484,7 @@ conference abstract</textarea></div>
   <div class="two-line">
     <div><label>建议纳入阈值</label><input id="incCut" type="number" value="4"></div>
     <div><label>建议排除阈值</label><input id="excCut" type="number" value="-2"></div>
-    <div><label>手动导入来源数据库</label>
+    <div><label for="manualSource">手动导入来源数据库</label>
       <select id="manualSource">
         <option value="embase">Embase</option>
         <option value="wos">Web of Science</option>
@@ -463,13 +498,13 @@ conference abstract</textarea></div>
         <option value="other">其他</option>
       </select>
     </div>
-    <div><label>导入题录文件</label><input type="file" id="recordFile" accept=".ris,.csv,.bib,.bibtex,.nbib,.txt,.xml" onchange="importRecordsFile(event)"></div>
-    <div><label>导入备份 JSON</label><input type="file" id="backupFile" accept=".json" onchange="importJSON(event)"></div>
+    <div><label for="recordFile">导入题录文件</label><input type="file" id="recordFile" aria-label="选择题录文件" accept=".ris,.csv,.bib,.bibtex,.nbib,.txt,.xml"></div>
+    <div><label for="backupFile">导入备份 JSON</label><input type="file" id="backupFile" aria-label="选择备份 JSON 文件" accept=".json"></div>
     <div class="actions">
-      <button class="g" onclick="exportCSV()">导出 CSV</button>
-      <button class="g" onclick="exportJSON()">备份 JSON</button>
-      <button class="y" onclick="demo()">示例</button>
-      <button class="r" onclick="clearAll()">清空</button>
+      <button class="g" id="btnExportCSV">导出 CSV</button>
+      <button class="g" id="btnExportJSON">备份 JSON</button>
+      <button class="y" id="btnDemo">载入完整示例项目</button>
+      <button class="r" id="btnClear">清空</button>
     </div>
   </div>
 </div>
@@ -480,12 +515,20 @@ conference abstract</textarea></div>
   <div class="adv-row"><label>多组协同加分</label><input id="advSynergy" type="number" value="2" min="0" max="10"><span class="muted">同时命中 ≥3 组检索词时的额外加分</span></div>
   <div class="adv-row"><label>排除词连续惩罚</label><input id="advExcPenalty" type="number" value="-1" max="0" step="1"><span class="muted">每多命中 1 个排除词的额外扣分</span></div>
   <div class="adv-row"><label>出版类型强排除</label><input id="advPubTypeExc" type="number" value="-5" max="0"><span class="muted">review/editorial/letter/case report 的额外扣分</span></div>
+  <div class="adv-row"><label for="openAlexApiKey">OpenAlex API Key</label><input id="openAlexApiKey" type="password" autocomplete="off" placeholder="必填；可免费申请"><span class="muted">OpenAlex 目前要求 API Key；<a href="https://openalex.org/settings/api" target="_blank" rel="noopener noreferrer">免费申请</a>。Key 仅保存在本机浏览器</span></div>
+  <div class="adv-row"><label for="pubMedApiKey">NCBI API Key</label><input id="pubMedApiKey" type="password" autocomplete="off" placeholder="可选；大量 PubMed 检索时建议填写"><span class="muted">仅发送给 NCBI，并保存在本机浏览器</span></div>
+  <div class="adv-row"><label for="apiContactEmail">Crossref 联系邮箱</label><input id="apiContactEmail" type="email" autocomplete="email" placeholder="可选；正式检索建议填写"><span class="muted">填写后进入 Crossref polite pool，可获得更稳定的速率；仅随 Crossref 请求发送</span></div>
   <div class="adv-row"><label>人群正向词</label><textarea id="advHumanPos" style="min-height:40px">human; patient; patients; cohort; case-control; clinical trial; population</textarea></div>
   <div class="adv-row"><label>动物正向词</label><textarea id="advAnimalPos" style="min-height:40px">animal; mouse; mice; rat; rabbit; zebrafish; in vivo; murine; rodent</textarea></div>
 </details>
 
+<div class="workflow-heading" id="screening-workspace">
+  <span>任务 3</span>
+  <div><b>复核与导出</b><small>筛选结果、PRISMA 流程图和最终数据集中管理</small></div>
+</div>
+
 <div class="card">
-  <span class="pill" title="各数据库获取的原始记录总数（去重前）">📥 总计获取 <b id="nFetched">0</b></span>
+  <span class="pill" title="实际下载到浏览器的题录数（去重前）；不是数据库命中总数">📥 实际下载 <b id="nFetched">0</b></span>
   <span class="pill">去重后 <b id="total">0</b></span>
   <span class="pill" title="跨数据库合并的重复记录数">🔗 合并重复 <b id="nDup">0</b></span>
   <span class="pill">建议纳入 <b id="nIn">0</b></span>
@@ -493,11 +536,12 @@ conference abstract</textarea></div>
   <span class="pill">待人工 <b id="nMay">0</b></span>
   <span class="pill">最终纳入 <b id="nFinIn">0</b></span>
   <span class="pill">最终排除 <b id="nFinEx">0</b></span>
+  <p class="count-note">数据库“命中数”、本次“实际下载数”和“跨库去重后数”是不同口径；每个数据库的命中数会显示在检索完成状态中。Crossref 属于元数据模糊匹配，结果数不应与 PubMed 等主题数据库直接比较。</p>
   <div class="inline" style="margin-top:8px">
-    搜索 <input id="f" placeholder="关键词 / PMID / DOI" style="max-width:320px">
-    结论 <select id="fd"><option value="">全部</option><option>建议纳入</option><option>建议排除</option><option>待人工判断</option><option>最终纳入</option><option>最终排除</option></select>
-    来源 <select id="fs"><option value="">全部来源</option></select>
-    类型 <select id="ft"><option value="">全部类型</option><option value="human">人群研究</option><option value="animal">动物研究</option><option value="in_vitro">体外研究</option><option value="unclear">不明确</option></select>
+    <label class="filter-field" for="f"><span>搜索</span><input id="f" placeholder="关键词 / PMID / DOI"></label>
+    <label class="filter-field" for="fd"><span>结论</span><select id="fd"><option value="">全部</option><option>建议纳入</option><option>建议排除</option><option>待人工判断</option><option>最终纳入</option><option>最终排除</option></select></label>
+    <label class="filter-field" for="fs"><span>来源</span><select id="fs"><option value="">全部来源</option></select></label>
+    <label class="filter-field" for="ft"><span>类型</span><select id="ft"><option value="">全部类型</option><option value="human">人群研究</option><option value="animal">动物研究</option><option value="in_vitro">体外研究</option><option value="unclear">不明确</option></select></label>
   </div>
   <div id="sourceStats" class="source-stats"></div>
 </div>
@@ -506,9 +550,9 @@ conference abstract</textarea></div>
   <details open>
     <summary style="font-weight:700;color:#0b4f79;cursor:pointer;font-size:15px">📊 PRISMA 2020 流程图</summary>
     <div class="prisma-controls">
-      <label style="margin:0;display:flex;align-items:center;gap:6px">未获取全文: <input id="prismaNotRetrieved" type="number" value="0" min="0" style="width:70px;padding:5px;text-align:center" onchange="onPrismaNotRetrievedChange()"></label>
-      <button onclick="exportPRISMASVG()" style="font-size:12px;padding:6px 12px">📥 导出 SVG</button>
-      <button onclick="exportPRISMAPNG()" style="font-size:12px;padding:6px 12px">🖼️ 导出 PNG</button>
+      <label style="margin:0;display:flex;align-items:center;gap:6px">未获取全文: <input id="prismaNotRetrieved" type="number" value="0" min="0" style="width:70px;padding:5px;text-align:center"></label>
+      <button id="btnExportSVG" style="font-size:12px;padding:6px 12px">📥 导出 SVG</button>
+      <button id="btnExportPNG" style="font-size:12px;padding:6px 12px">🖼️ 导出 PNG</button>
     </div>
     <div id="prismaContainer" class="prisma-container"></div>
   </details>
@@ -523,8 +567,123 @@ conference abstract</textarea></div>
 </table>
 </div>
 
+<div class="workflow-heading" id="quality-workspace">
+  <span>任务 4</span>
+  <div><b>全文复筛与证据质量</b><small>记录全文获取、排除理由、偏倚风险和 GRADE 证据确定性</small></div>
+</div>
 
-	
-	<script src="app.js"></script>
+<section class="card review-workspace" id="reviewWorkspace">
+  <div class="review-tabs" role="tablist" aria-label="全文与质量评价">
+    <button type="button" class="review-tab active" data-review-tab="fulltext" role="tab" aria-selected="true">全文复筛</button>
+    <button type="button" class="review-tab" data-review-tab="risk" role="tab" aria-selected="false">偏倚风险</button>
+    <button type="button" class="review-tab" data-review-tab="grade" role="tab" aria-selected="false">GRADE 证据分级</button>
+    <button type="button" class="review-tab" data-review-tab="report" role="tab" aria-selected="false">项目报告</button>
+  </div>
+
+  <div class="review-pane" data-review-pane="fulltext">
+    <div class="review-toolbar"><button type="button" id="btnSyncFullText">同步待复核文献</button><span class="muted">将“建议纳入”和“最终纳入”的文献带入全文阶段。</span></div>
+    <div class="review-table-wrap"><table><thead><tr><th>研究</th><th>全文状态</th><th>全文排除理由</th><th>文件/定位信息</th><th>复核备注</th></tr></thead><tbody id="fullTextBody"><tr><td colspan="5" class="meta-empty">点击“同步待复核文献”开始全文复筛。</td></tr></tbody></table></div>
+  </div>
+
+  <div class="review-pane" data-review-pane="risk" hidden>
+    <div class="review-toolbar">
+      <button type="button" id="btnSyncRisk">同步最终纳入研究</button>
+      <button type="button" class="g" id="btnAddRiskStudy">添加评价对象</button>
+      <label>默认工具<select id="riskDefaultTool"><option value="rob2">RoB 2（随机试验）</option><option value="robins">ROBINS-I（非随机干预）</option><option value="nos">NOS（队列/病例对照）</option><option value="syrcle">SYRCLE（动物实验）</option></select></label>
+    </div>
+    <p class="meta-note">逐领域记录判断。系统汇总不能替代两名评价者依据原文作出独立判断。</p>
+    <div id="riskAssessmentList" class="risk-list"><div class="meta-empty">尚未添加质量评价。</div></div>
+    <div id="riskSummary" class="risk-summary"></div>
+  </div>
+
+  <div class="review-pane" data-review-pane="grade" hidden>
+    <div class="review-toolbar"><button type="button" class="g" id="btnAddGradeOutcome">添加结局</button><span class="muted">按结局评价证据体的确定性，而不是按单篇研究评价。</span></div>
+    <div class="review-table-wrap"><table class="grade-table"><thead><tr><th>结局</th><th>初始等级</th><th>偏倚风险</th><th>不一致性</th><th>间接性</th><th>不精确性</th><th>发表偏倚</th><th>升级</th><th>确定性</th><th>操作</th></tr></thead><tbody id="gradeBody"><tr><td colspan="10" class="meta-empty">添加主要或次要结局后进行 GRADE 评价。</td></tr></tbody></table></div>
+  </div>
+
+  <div class="review-pane" data-review-pane="report" id="review-report" hidden>
+    <div class="review-toolbar"><button type="button" class="g" id="btnBuildReport">生成项目报告</button><button type="button" id="btnExportReportHtml">导出 HTML 报告</button><button type="button" id="btnPrintReport">打印 / 保存 PDF</button></div>
+    <article id="reviewReportPreview" class="report-preview"><div class="meta-empty">生成报告后在这里预览研究方案、筛选结果、质量评价和 Meta 分析摘要。</div></article>
+  </div>
+</section>
+
+<div class="workflow-heading" id="meta-analysis-workspace">
+  <span>任务 5</span>
+  <div><b>数据提取与统计分析</b><small>从最终纳入研究提取原始数据，完成确定性效应量计算与可视化</small></div>
+</div>
+
+<section class="card meta-workspace" id="metaWorkspace" aria-labelledby="metaWorkspaceTitle">
+  <div class="meta-workspace-head">
+    <div>
+      <p class="meta-eyebrow">Meta Analysis Workbench</p>
+      <h2 id="metaWorkspaceTitle">数据提取 → 效应量计算 → 图形导出</h2>
+      <p>统计结果由固定公式计算，不使用生成式 AI；原始数值保存在本机浏览器，可导出 CSV 留档复核。</p>
+    </div>
+    <div class="meta-method-badge"><b>Cochrane 工作流</b><span>可复现 · 可追溯</span></div>
+  </div>
+
+  <div class="meta-tabs" role="tablist" aria-label="Meta 分析工作台">
+    <button type="button" class="meta-tab active" data-tab="extraction" role="tab" aria-selected="true">1. 数据提取</button>
+    <button type="button" class="meta-tab" data-tab="analysis" role="tab" aria-selected="false">2. 分析与画图</button>
+    <button type="button" class="meta-tab" data-tab="sensitivity" role="tab" aria-selected="false">3. 敏感性分析</button>
+  </div>
+
+  <div class="meta-pane" data-pane="extraction">
+    <div class="meta-toolbar">
+      <label>数据类型<select id="metaDataType"><option value="binary">二分类结局</option><option value="continuous">连续型结局</option><option value="generic">文献已报告效应值</option></select></label>
+      <label>效应量<select id="metaMeasure"></select></label>
+      <label>分析结局<select id="metaOutcomeFilter"><option value="">全部 / 未命名结局</option></select></label>
+      <button type="button" id="btnMetaSyncIncluded">同步最终纳入研究（<b id="metaIncludedAvailable">0</b>）</button>
+      <button type="button" class="g" id="btnMetaAddStudy">添加研究</button>
+      <label class="meta-file-button">导入提取 CSV<input id="metaCsvFile" type="file" accept=".csv,text/csv"></label>
+      <button type="button" class="gray" id="btnMetaExportCsv">导出提取 CSV</button>
+    </div>
+    <p class="meta-note">每一行对应一项独立研究或一个可独立合并的亚组。请从原文核对样本量、事件数、均值和标准差；零事件研究自动采用 0.5 连续性校正。</p>
+    <div class="meta-table-wrap">
+      <table class="meta-extraction-table"><thead id="metaExtractionHead"></thead><tbody id="metaExtractionBody"></tbody></table>
+    </div>
+    <div class="meta-calculate-row">
+      <label>合并模型<select id="metaModel"><option value="random">随机效应模型（DerSimonian–Laird）</option><option value="fixed">固定效应模型（逆方差）</option></select></label>
+      <button type="button" class="g meta-primary-action" id="btnMetaCalculate">计算并生成图表</button>
+      <span id="metaStatus" class="muted" aria-live="polite">录入数据后即可计算。</span>
+    </div>
+  </div>
+
+  <div class="meta-pane" data-pane="analysis" hidden>
+    <div id="metaResultCards" class="meta-result-grid">
+      <div class="meta-result-card meta-placeholder"><small>尚未计算</small><strong>—</strong><span>请先在“数据提取”中录入研究数据</span></div>
+    </div>
+    <div class="meta-secondary-grid">
+      <div class="meta-chart-card">
+        <div class="meta-chart-head"><div><h3>亚组分析</h3><p>按数据提取表中的“亚组”字段分别合并，并检验组间差异。</p></div></div>
+        <div class="meta-table-wrap"><table><thead><tr><th>亚组</th><th>研究数</th><th>合并效应</th><th>95% CI</th><th>I²</th></tr></thead><tbody id="metaSubgroupBody"><tr><td colspan="5" class="meta-empty">填写至少两个亚组后生成。</td></tr></tbody></table></div>
+        <p id="metaSubgroupTest" class="meta-note">组间差异检验：—</p>
+      </div>
+      <div class="meta-chart-card">
+        <div class="meta-chart-head"><div><h3>发表偏倚探索</h3><p>Egger 回归建议在至少 10 项研究时解释。</p></div></div>
+        <div id="metaBiasResult" class="meta-bias-result">完成计算后生成。</div>
+      </div>
+    </div>
+    <div class="meta-chart-card">
+      <div class="meta-chart-head"><div><h3>森林图</h3><p>方块大小表示研究权重，菱形表示合并效应及 95% CI。</p></div><button type="button" id="btnForestPng">导出高清 PNG</button></div>
+      <div class="meta-canvas-wrap"><canvas id="metaForestCanvas" aria-label="Meta 分析森林图"></canvas></div>
+    </div>
+    <div class="meta-chart-card">
+      <div class="meta-chart-head"><div><h3>漏斗图</h3><p>用于探索小样本效应；研究较少时不应单独据此判断发表偏倚。</p></div><button type="button" id="btnFunnelPng">导出高清 PNG</button></div>
+      <div class="meta-canvas-wrap meta-funnel"><canvas id="metaFunnelCanvas" aria-label="Meta 分析漏斗图"></canvas></div>
+    </div>
+  </div>
+
+  <div class="meta-pane" data-pane="sensitivity" hidden>
+    <div class="meta-chart-card">
+      <div class="meta-chart-head"><div><h3>逐一剔除敏感性分析</h3><p>每次剔除一项研究并重新合并，用于识别对总体结论影响过大的研究。</p></div></div>
+      <div class="meta-table-wrap"><table><thead><tr><th>剔除研究</th><th>合并效应</th><th>95% CI</th><th>I²</th></tr></thead><tbody id="metaSensitivityBody"><tr><td colspan="4" class="meta-empty">完成统计计算后自动生成。</td></tr></tbody></table></div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /mainApp -->
+
+<script type="module" src="js/main.js?v=20260818c"></script>
 </body>
 </html>
