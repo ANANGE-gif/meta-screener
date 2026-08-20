@@ -1,14 +1,14 @@
 // main.js — 应用入口。组装所有模块，编排启动流程。
 
 import { EventBus } from './event-bus.js?v=20260722b';
-import { AppState } from './state.js?v=20260818c';
+import { AppState } from './state.js?v=20260820a';
 import { Renderer } from './renderer.js?v=20260722b';
 import { UIManager } from './ui.js?v=20260818c';
 import { AuthService } from './auth.js?v=20260722b';
 import { QueryBuilder } from './query-builder.js?v=20260722b';
 import { ScoringEngine } from './scoring.js?v=20260801d';
 import { PrismaDiagram } from './prisma.js?v=20260722b';
-import { ApiFetcher } from './api-fetcher.js?v=20260818c';
+import { ApiFetcher } from './api-fetcher.js?v=20260820a';
 import { FileParser } from './parsers.js?v=20260723f';
 import { addRecords } from './dedup.js?v=20260722b';
 import { sourceLabelFor } from './record.js?v=20260722b';

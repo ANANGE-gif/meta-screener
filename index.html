@@ -3,8 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="MetaEvidence：从多数据库文献检索、筛选、质量评价、数据提取到 Meta 分析和报告交付的一体化系统评价工作台。">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://eutils.ncbi.nlm.nih.gov https://www.ebi.ac.uk https://api.crossref.org https://api.openalex.org https://jzzxkjwvwlwzmdymwjah.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; upgrade-insecure-requests">
 <title>MetaEvidence · Systematic Review Studio</title>
-<link rel="stylesheet" href="style.css?v=20260818c">
+<link rel="stylesheet" href="style.css?v=20260820a">
 </head>
 <body>
 
@@ -422,7 +425,7 @@ cohort
 cross-sectional; observational study</textarea></div>
   <div><label for="yf">年份起</label><input id="yf" placeholder="如 1990" value="1990"></div>
   <div><label for="yt">年份止</label><input id="yt" placeholder="如 2026" value="2026"></div>
-  <div><label for="max">目标获取数量（0=不限；试用模式每库最多 15 条）</label><input id="max" type="number" value="200" min="0"></div>
+  <div><label for="max">目标获取数量（0=单库安全上限 10,000；试用模式每库最多 15 条）</label><input id="max" type="number" value="200" min="0" max="10000"></div>
   <div><label for="sort">排序</label><select id="sort"><option value="relevance">相关性</option><option value="pub date">发表时间</option></select></div>
 </div>
 
@@ -442,7 +445,7 @@ cross-sectional; observational study</textarea></div>
     <button class="gray" id="btnRescore">重新评分</button>
   </div>
   <span id="status" class="muted">未检索</span>
-  <p class="search-speed-note">高速检索：四库并行 · 同源缓存 · 自动重试 · 完成一库立即显示结果审计</p>
+  <p class="search-speed-note">高速且受控：四库并行 · 同源缓存 · 自动重试 · 单次规模、频率与并发保护 · 完成一库立即显示结果审计</p>
   <div class="progress-bar" id="progressBar" style="display:none"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
   <div id="searchAuditPanel" class="search-audit" style="display:none"></div>
   <label style="margin-top:10px" for="pubmedQuery">PubMed 检索式</label>
@@ -515,9 +518,9 @@ conference abstract</textarea></div>
   <div class="adv-row"><label>多组协同加分</label><input id="advSynergy" type="number" value="2" min="0" max="10"><span class="muted">同时命中 ≥3 组检索词时的额外加分</span></div>
   <div class="adv-row"><label>排除词连续惩罚</label><input id="advExcPenalty" type="number" value="-1" max="0" step="1"><span class="muted">每多命中 1 个排除词的额外扣分</span></div>
   <div class="adv-row"><label>出版类型强排除</label><input id="advPubTypeExc" type="number" value="-5" max="0"><span class="muted">review/editorial/letter/case report 的额外扣分</span></div>
-  <div class="adv-row"><label for="openAlexApiKey">OpenAlex API Key</label><input id="openAlexApiKey" type="password" autocomplete="off" placeholder="必填；可免费申请"><span class="muted">OpenAlex 目前要求 API Key；<a href="https://openalex.org/settings/api" target="_blank" rel="noopener noreferrer">免费申请</a>。Key 仅保存在本机浏览器</span></div>
-  <div class="adv-row"><label for="pubMedApiKey">NCBI API Key</label><input id="pubMedApiKey" type="password" autocomplete="off" placeholder="可选；大量 PubMed 检索时建议填写"><span class="muted">仅发送给 NCBI，并保存在本机浏览器</span></div>
-  <div class="adv-row"><label for="apiContactEmail">Crossref 联系邮箱</label><input id="apiContactEmail" type="email" autocomplete="email" placeholder="可选；正式检索建议填写"><span class="muted">填写后进入 Crossref polite pool，可获得更稳定的速率；仅随 Crossref 请求发送</span></div>
+  <div class="adv-row"><label for="openAlexApiKey">OpenAlex API Key</label><input id="openAlexApiKey" type="password" autocomplete="off" placeholder="仅检索 OpenAlex 时需要"><span class="muted">不填写将自动跳过 OpenAlex，不影响其他数据库；<a href="https://openalex.org/settings/api" target="_blank" rel="noopener noreferrer">免费申请</a>。Key 仅保存在当前标签页</span></div>
+  <div class="adv-row"><label for="pubMedApiKey">NCBI API Key</label><input id="pubMedApiKey" type="password" autocomplete="off" placeholder="可选；大量 PubMed 检索时建议填写"><span class="muted">仅发送给 NCBI，并仅保存在当前标签页</span></div>
+  <div class="adv-row"><label for="apiContactEmail">Crossref 联系邮箱</label><input id="apiContactEmail" type="email" autocomplete="email" placeholder="可选；正式检索建议填写"><span class="muted">填写后进入 Crossref polite pool；仅随 Crossref 请求发送且不会写入项目备份</span></div>
   <div class="adv-row"><label>人群正向词</label><textarea id="advHumanPos" style="min-height:40px">human; patient; patients; cohort; case-control; clinical trial; population</textarea></div>
   <div class="adv-row"><label>动物正向词</label><textarea id="advAnimalPos" style="min-height:40px">animal; mouse; mice; rat; rabbit; zebrafish; in vivo; murine; rodent</textarea></div>
 </details>
@@ -684,6 +687,6 @@ conference abstract</textarea></div>
 
 </div><!-- /mainApp -->
 
-<script type="module" src="js/main.js?v=20260818c"></script>
+<script type="module" src="js/main.js?v=20260820a"></script>
 </body>
 </html>

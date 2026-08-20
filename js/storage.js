@@ -3,6 +3,27 @@
 import { STORAGE_KEYS, OLD_STORAGE_KEYS } from './config.js?v=20260722b';
 import { normalizeRecord } from './record.js?v=20260722b';
 
+const SESSION_SECRETS_KEY = 'meta_screener_session_secrets_v1';
+const SESSION_SECRET_IDS = ['openAlexApiKey', 'pubMedApiKey', 'apiContactEmail'];
+
+function readSessionSecrets() {
+  try {
+    const value = JSON.parse(sessionStorage.getItem(SESSION_SECRETS_KEY) || '{}');
+    return value && typeof value === 'object' ? value : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeSessionSecrets(secrets) {
+  const clean = {};
+  SESSION_SECRET_IDS.forEach(id => {
+    if (typeof secrets[id] === 'string' && secrets[id]) clean[id] = secrets[id];
+  });
+  if (Object.keys(clean).length) sessionStorage.setItem(SESSION_SECRETS_KEY, JSON.stringify(clean));
+  else sessionStorage.removeItem(SESSION_SECRETS_KEY);
+}
+
 // ===== Records =====
 
 /** 加载记录（自动尝试旧键名迁移） */
@@ -39,13 +60,32 @@ export function saveNow(records) {
 
 /** 从 DOM 读取当前设置值并保存 */
 export function saveSettings(settings) {
-  localStorage[STORAGE_KEYS.SETTINGS] = JSON.stringify(settings);
+  const safeSettings = { ...(settings || {}) };
+  SESSION_SECRET_IDS.forEach(id => delete safeSettings[id]);
+  localStorage[STORAGE_KEYS.SETTINGS] = JSON.stringify(safeSettings);
 }
 
 /** 加载设置 */
 export function loadSettings() {
   try {
-    return JSON.parse(localStorage[STORAGE_KEYS.SETTINGS] || '{}');
+    const settings = JSON.parse(localStorage[STORAGE_KEYS.SETTINGS] || '{}');
+    if (!settings || typeof settings !== 'object') return {};
+
+    // Migrate old releases that persisted API keys/email in localStorage.
+    const secrets = readSessionSecrets();
+    let migrated = false;
+    SESSION_SECRET_IDS.forEach(id => {
+      if (typeof settings[id] === 'string' && settings[id]) secrets[id] = settings[id];
+      if (Object.prototype.hasOwnProperty.call(settings, id)) {
+        delete settings[id];
+        migrated = true;
+      }
+    });
+    if (migrated) {
+      writeSessionSecrets(secrets);
+      localStorage[STORAGE_KEYS.SETTINGS] = JSON.stringify(settings);
+    }
+    return settings;
   } catch {
     return {};
   }
@@ -58,7 +98,7 @@ export function collectSettings() {
     'yf', 'yt', 'max', 'sort', 'incWords', 'excWords', 'incCut', 'excCut',
     'manualSource', 'advTitleMul', 'advSynergy', 'advExcPenalty',
     'advPubTypeExc', 'advHumanPos', 'advAnimalPos',
-    'cnPop', 'cnAnimal', 'cnExpo', 'openAlexApiKey', 'pubMedApiKey', 'apiContactEmail'
+    'cnPop', 'cnAnimal', 'cnExpo'
   ];
   const settings = {};
   ids.forEach(id => {
@@ -68,6 +108,12 @@ export function collectSettings() {
   // Database checkboxes
   settings.sources = [...document.querySelectorAll('.db-check:checked')].map(x => x.value);
   settings.cnSources = [...document.querySelectorAll('.db-check-cn:checked')].map(x => x.value);
+  const secrets = {};
+  SESSION_SECRET_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) secrets[id] = el.value || '';
+  });
+  writeSessionSecrets(secrets);
   return settings;
 }
 
@@ -75,7 +121,9 @@ export function collectSettings() {
 export function applySettings(settings) {
   if (!settings) return;
   Object.entries(settings).forEach(([k, v]) => {
-    if (k === 'sources' && Array.isArray(v)) {
+    if (SESSION_SECRET_IDS.includes(k)) {
+      return;
+    } else if (k === 'sources' && Array.isArray(v)) {
       document.querySelectorAll('.db-check').forEach(box => {
         box.checked = v.includes(box.value);
       });
@@ -87,6 +135,11 @@ export function applySettings(settings) {
       const el = document.getElementById(k);
       if (el && typeof v === 'string') el.value = v;
     }
+  });
+  const secrets = readSessionSecrets();
+  SESSION_SECRET_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && typeof secrets[id] === 'string') el.value = secrets[id];
   });
 }
 

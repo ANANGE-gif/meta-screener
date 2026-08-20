@@ -5,6 +5,12 @@ import { FileParser } from './parsers.js?v=20260722b';
 import { QueryBuilder } from './query-builder.js?v=20260722b';
 import { yearInRange, delay, fetchWithTimeout } from './utils.js?v=20260722b';
 
+const MAX_RECORDS_PER_SOURCE = 10000;
+const SEARCH_WINDOW_MS = 60 * 1000;
+const MAX_SEARCHES_PER_WINDOW = 4;
+const MIN_SEARCH_INTERVAL_MS = 2500;
+const SEARCH_GUARD_KEY = 'meta_screener_search_guard_v1';
+
 export class ApiFetcher {
   #aborted = false;
   #fetching = false;
@@ -13,6 +19,29 @@ export class ApiFetcher {
   #onError;
   #onSourceComplete;
   #gatewayDisabled = false;
+
+  #consumeSearchBudget() {
+    const now = Date.now();
+    let recent = [];
+    try {
+      recent = JSON.parse(sessionStorage.getItem(SEARCH_GUARD_KEY) || '[]');
+      if (!Array.isArray(recent)) recent = [];
+    } catch {
+      recent = [];
+    }
+    recent = recent.filter(value => Number.isFinite(value) && now - value < SEARCH_WINDOW_MS);
+    const last = recent[recent.length - 1] || 0;
+    if (last && now - last < MIN_SEARCH_INTERVAL_MS) {
+      const wait = Math.ceil((MIN_SEARCH_INTERVAL_MS - (now - last)) / 1000);
+      throw new Error(`请求过快，请等待 ${wait} 秒后再检索`);
+    }
+    if (recent.length >= MAX_SEARCHES_PER_WINDOW) {
+      const wait = Math.max(1, Math.ceil((SEARCH_WINDOW_MS - (now - recent[0])) / 1000));
+      throw new Error(`一分钟内检索次数过多，请等待 ${wait} 秒`);
+    }
+    recent.push(now);
+    sessionStorage.setItem(SEARCH_GUARD_KEY, JSON.stringify(recent));
+  }
 
   constructor({ onProgress, onComplete, onError, onSourceComplete } = {}) {
     this.#onProgress = onProgress;
@@ -40,7 +69,8 @@ export class ApiFetcher {
     const trial = localStorage['meta_screener_pro_license'] === 'trial';
     if (trial) return 15;
     const v = +(document.getElementById('max')?.value || 0);
-    return v <= 0 ? 0 : v;
+    if (v <= 0) return MAX_RECORDS_PER_SOURCE;
+    return Math.min(Math.floor(v), MAX_RECORDS_PER_SOURCE);
   }
 
   /** 读取年份范围 */
@@ -418,6 +448,7 @@ export class ApiFetcher {
   async fetchSelectedDatabases(chosenSources) {
     if (!chosenSources.length) return { messages: ['请先勾选至少一个数据库'], records: [] };
     if (this.#fetching) return { messages: ['正在检索中，请稍候...'], records: [] };
+    this.#consumeSearchBudget();
     this.#fetching = true;
 
     const FETCHERS = {
@@ -432,7 +463,30 @@ export class ApiFetcher {
     let allFetched = [];
     const audits = [];
 
-    const tasks = chosenSources.map(async source => {
+    const requestedSources = [...new Set(chosenSources)].filter(source => Object.hasOwn(FETCHERS, source));
+    const openAlexKey = (document.getElementById('openAlexApiKey')?.value || '').trim();
+    const activeSources = requestedSources.filter(source => source !== 'openalex' || openAlexKey);
+    if (requestedSources.includes('openalex') && !openAlexKey) {
+      messages.push('OpenAlex：未填写 API Key，已安全跳过；不影响其他数据库');
+      const audit = {
+        source: 'openalex',
+        label: sourceLabelFor('openalex'),
+        ok: false,
+        skipped: true,
+        error: '未填写 API Key，已跳过',
+        elapsedMs: 0,
+        completedAt: new Date().toISOString()
+      };
+      audits.push(audit);
+      this.#onSourceComplete?.(audit);
+    }
+
+    if (!activeSources.length) {
+      this.#fetching = false;
+      return { messages, records: [], audits };
+    }
+
+    const tasks = activeSources.map(async source => {
       if (this.#aborted) return null;
       const startedAt = Date.now();
       try {

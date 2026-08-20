@@ -1,7 +1,7 @@
 // state.js — 集中式响应状态管理。所有状态变更经过此处，自动通知 EventBus。
 
 import { normalizeRecord } from './record.js?v=20260722b';
-import { loadRecords as storageLoadRecords, saveRecords as storageSaveRecords, saveNow as storageSaveNow, loadSettings, saveSettings, collectSettings, applySettings } from './storage.js?v=20260818c';
+import { loadRecords as storageLoadRecords, saveRecords as storageSaveRecords, saveNow as storageSaveNow, loadSettings, saveSettings, collectSettings, applySettings } from './storage.js?v=20260820a';
 import { DEFAULT_PAGE_SIZE } from './config.js?v=20260722b';
 import { delay } from './utils.js?v=20260722b';
 
