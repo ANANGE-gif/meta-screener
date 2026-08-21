@@ -1,6 +1,7 @@
 // analysis-ui.js — 数据提取、确定性计算与图形输出工作台。
 
 import { computeStudyEffect, poolEffects, poolSubgroups, eggerTest, leaveOneOut, toDisplay, isRatioMeasure, measureLabel, formatP } from './meta-analysis.js?v=20260723g';
+import { getProjectStorage } from './storage.js?v=20260820b';
 
 const STORAGE_KEY = 'meta_screener_analysis_v1';
 
@@ -79,6 +80,14 @@ export class MetaAnalysisWorkspace {
     this.updateIncludedCount();
   }
 
+  reload() {
+    this.#load();
+    this.#renderMeasureOptions();
+    this.#renderTable();
+    this.#invalidateAnalysis('已载入当前账号的数据提取表，请重新计算统计结果。');
+    this.updateIncludedCount();
+  }
+
   exportState() {
     this.#readRows();
     return JSON.parse(JSON.stringify({ rows: this.#rows, type: this.#type, measure: this.#measure, model: this.#model, outcome: this.#outcome }));
@@ -123,13 +132,19 @@ export class MetaAnalysisWorkspace {
 
   #load() {
     try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      const saved = JSON.parse(getProjectStorage().getItem(STORAGE_KEY) || '{}');
       this.#rows = Array.isArray(saved.rows) ? saved.rows : [];
       this.#type = FIELD_SETS[saved.type] ? saved.type : 'binary';
       this.#measure = saved.measure || TYPE_MEASURES[this.#type][0][0];
       this.#model = saved.model === 'fixed' ? 'fixed' : 'random';
       this.#outcome = String(saved.outcome || '');
-    } catch { this.#rows = []; }
+    } catch {
+      this.#rows = [];
+      this.#type = 'binary';
+      this.#measure = 'OR';
+      this.#model = 'random';
+      this.#outcome = '';
+    }
     const typeEl = document.getElementById('metaDataType');
     const modelEl = document.getElementById('metaModel');
     if (typeEl) typeEl.value = this.#type;
@@ -137,7 +152,7 @@ export class MetaAnalysisWorkspace {
   }
 
   #save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ rows: this.#rows, type: this.#type, measure: this.#measure, model: this.#model, outcome: this.#outcome }));
+    getProjectStorage().setItem(STORAGE_KEY, JSON.stringify({ rows: this.#rows, type: this.#type, measure: this.#measure, model: this.#model, outcome: this.#outcome }));
   }
 
   #bind() {

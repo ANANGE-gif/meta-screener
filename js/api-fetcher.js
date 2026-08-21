@@ -19,6 +19,7 @@ export class ApiFetcher {
   #onError;
   #onSourceComplete;
   #gatewayDisabled = false;
+  #canUsePremium;
 
   #consumeSearchBudget() {
     const now = Date.now();
@@ -43,7 +44,8 @@ export class ApiFetcher {
     sessionStorage.setItem(SEARCH_GUARD_KEY, JSON.stringify(recent));
   }
 
-  constructor({ onProgress, onComplete, onError, onSourceComplete } = {}) {
+  constructor({ canUsePremium = () => false, onProgress, onComplete, onError, onSourceComplete } = {}) {
+    this.#canUsePremium = canUsePremium;
     this.#onProgress = onProgress;
     this.#onComplete = onComplete;
     this.#onError = onError;
@@ -66,8 +68,6 @@ export class ApiFetcher {
 
   /** 获取当前限制条数 */
   getMaxFetch() {
-    const trial = localStorage['meta_screener_pro_license'] === 'trial';
-    if (trial) return 15;
     const v = +(document.getElementById('max')?.value || 0);
     if (v <= 0) return MAX_RECORDS_PER_SOURCE;
     return Math.min(Math.floor(v), MAX_RECORDS_PER_SOURCE);
@@ -446,6 +446,13 @@ export class ApiFetcher {
   // ===== Orchestrator =====
 
   async fetchSelectedDatabases(chosenSources) {
+    if (!this.#canUsePremium()) {
+      return {
+        messages: ['仅已核验的专业版账号可连接真实数据库；请先登录并激活授权'],
+        records: [],
+        audits: []
+      };
+    }
     if (!chosenSources.length) return { messages: ['请先勾选至少一个数据库'], records: [] };
     if (this.#fetching) return { messages: ['正在检索中，请稍候...'], records: [] };
     this.#consumeSearchBudget();
@@ -533,9 +540,6 @@ export class ApiFetcher {
 
     try {
       const settled = await Promise.all(tasks);
-      if (localStorage['meta_screener_pro_license'] === 'trial') {
-        messages.push('试用模式：每个数据库最多下载 15 条；激活 Pro 后按“目标获取数量”执行');
-      }
       settled.filter(Boolean).forEach(item => {
         if (item.error) {
           messages.push(`${sourceLabelFor(item.source)}：失败（${item.error.message || '网络错误'}）`);

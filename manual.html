@@ -136,12 +136,12 @@
 <!-- ===== 2 ===== -->
 <h2 id="auth">2. 激活与认证</h2>
 
-<p>首次使用需要激活。提供三种方式：</p>
+<p>正式项目功能需要激活；免费试用无需激活。提供三种进入方式：</p>
 
 <div class="step">
 <p><span class="num">A</span><strong>在线注册 + 激活码</strong></p>
 <p>点击「注册」选项卡，填写邮箱、密码和激活码。注册后检查邮箱确认链接，然后登录即可。激活码一码一人，由管理员分发。</p>
-<p class="tip">💡 在线模式支持跨设备数据同步（需配置 Supabase）。</p>
+<p class="tip">💡 账号可跨设备登录；项目数据默认保存在本机，换设备请用 JSON 备份迁移。</p>
 </div>
 
 <div class="step">
@@ -151,8 +151,8 @@
 </div>
 
 <div class="step">
-<p><span class="num">C</span><strong>试用模式</strong></p>
-<p>点击「先试用看看」，无需任何激活码。限制：每次检索最多返回 <strong>15 条</strong> 记录。</p>
+<p><span class="num">C</span><strong>免费试用（演示沙盒）</strong></p>
+<p>点击「免费试用完整流程」，无需任何激活码。可浏览完整示例项目，但不能连接真实数据库、导入或编辑个人项目、导出正式成果。</p>
 </div>
 
 <div class="warn">⚠️ 清除浏览器数据会导致激活状态丢失。建议定期导出数据备份。</div>
@@ -210,7 +210,7 @@
 <tr><td>OpenAlex</td><td><span class="badge badge-green">直连</span></td><td>开放学术图谱，覆盖面广</td></tr>
 </table>
 
-<p>每次最多获取数可在右上角设置（默认 500，试用模式限 15）。</p>
+<p>专业版可设置单库目标获取数量；免费试用为演示沙盒，不连接真实数据库，只展示内置示例项目。</p>
 
 <h3>4.3 中文数据库辅助</h3>
 
@@ -309,11 +309,11 @@
 <p>在「⚙️ 高级配置」面板中可调整：</p>
 <table>
 <tr><th>参数</th><th>默认值</th><th>作用</th></tr>
-<tr><td>入围阈值 (IncCut)</td><td>3</td><td>评分 ≥ 此值 → 建议纳入</td></tr>
-<tr><td>排除阈值 (ExcCut)</td><td>-3</td><td>评分 ≤ 此值 → 建议排除</td></tr>
-<tr><td>标题乘数</td><td>3</td><td>标题命中关键词的权重倍率</td></tr>
-<tr><td>协同加分</td><td>1</td><td>P+E 同时出现额外加分</td></tr>
-<tr><td>排除罚分</td><td>-2</td><td>命中排除词时的罚分</td></tr>
+<tr><td>入围阈值 (IncCut)</td><td>4</td><td>评分 ≥ 此值 → 建议纳入</td></tr>
+<tr><td>排除阈值 (ExcCut)</td><td>-2</td><td>评分 ≤ 此值 → 建议排除</td></tr>
+<tr><td>标题乘数</td><td>2</td><td>标题命中关键词的权重倍率</td></tr>
+<tr><td>协同加分</td><td>2</td><td>同时命中至少 3 组检索词时额外加分</td></tr>
+<tr><td>排除词连续惩罚</td><td>-1</td><td>每多命中 1 个排除词的额外扣分</td></tr>
 </table>
 
 <h3>9.2 筛选词自定义</h3>

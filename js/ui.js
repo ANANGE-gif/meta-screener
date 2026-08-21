@@ -92,8 +92,8 @@ export class UIManager {
     const el = document.getElementById('aboutLicense');
     if (el) {
       const lic = localStorage['meta_screener_pro_license'];
-      if (lic === 'trial') el.textContent = '当前：试用模式（每次获取限 15 条）';
-      else if (lic) el.textContent = '已激活：' + lic;
+      if (lic === 'trial') el.textContent = '当前：免费试用（演示沙盒，真实项目功能未开放）';
+      else if (lic) el.textContent = `已激活：${lic.slice(0, 4)}••••${lic.slice(-4)}`;
       else el.textContent = '';
     }
   }

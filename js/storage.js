@@ -5,6 +5,45 @@ import { normalizeRecord } from './record.js?v=20260722b';
 
 const SESSION_SECRETS_KEY = 'meta_screener_session_secrets_v1';
 const SESSION_SECRET_IDS = ['openAlexApiKey', 'pubMedApiKey', 'apiContactEmail'];
+const LEGACY_PROJECT_OWNER_KEY = 'meta_project_legacy_owner_v1';
+
+/** Trial project data stays in the current tab and never shares paid-project storage. */
+export function getProjectStorage() {
+  const license = localStorage[STORAGE_KEYS.LICENSE] || '';
+  if (license === 'trial') return sessionStorage;
+
+  let userId = '';
+  try {
+    userId = JSON.parse(localStorage[STORAGE_KEYS.AUTH_SESSION] || 'null')?.user?.id || '';
+  } catch { /* invalid session is treated as signed out */ }
+
+  const deviceId = localStorage[STORAGE_KEYS.DEVICE] || '';
+  const subject = userId ? `user:${userId}` : license ? `device:${deviceId || license}` : '';
+  if (!subject) {
+    return {
+      getItem: key => sessionStorage.getItem(`guest:${key}`),
+      setItem: (key, value) => sessionStorage.setItem(`guest:${key}`, value),
+      removeItem: key => sessionStorage.removeItem(`guest:${key}`)
+    };
+  }
+
+  const prefix = `meta_project:${subject}:`;
+  return {
+    getItem(key) {
+      const scoped = localStorage.getItem(prefix + key);
+      if (scoped !== null) return scoped;
+      const legacy = localStorage.getItem(key);
+      if (legacy === null) return null;
+      const owner = localStorage.getItem(LEGACY_PROJECT_OWNER_KEY);
+      if (owner && owner !== subject) return null;
+      if (!owner) localStorage.setItem(LEGACY_PROJECT_OWNER_KEY, subject);
+      localStorage.setItem(prefix + key, legacy);
+      return legacy;
+    },
+    setItem: (key, value) => localStorage.setItem(prefix + key, value),
+    removeItem: key => localStorage.removeItem(prefix + key)
+  };
+}
 
 function readSessionSecrets() {
   try {
@@ -24,14 +63,20 @@ function writeSessionSecrets(secrets) {
   else sessionStorage.removeItem(SESSION_SECRETS_KEY);
 }
 
+export function clearSessionSecrets() {
+  sessionStorage.removeItem(SESSION_SECRETS_KEY);
+}
+
 // ===== Records =====
 
 /** 加载记录（自动尝试旧键名迁移） */
 export function loadRecords() {
-  let raw = localStorage[STORAGE_KEYS.RECORDS];
+  const store = getProjectStorage();
+  let raw = store.getItem(STORAGE_KEYS.RECORDS);
   if (!raw) {
     for (const k of OLD_STORAGE_KEYS) {
-      if (localStorage[k]) { raw = localStorage[k]; break; }
+      const legacy = store.getItem(k);
+      if (legacy) { raw = legacy; break; }
     }
   }
   let parsed = [];
@@ -46,14 +91,14 @@ let saveTimer = null;
 export function saveRecords(records) {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
-    localStorage[STORAGE_KEYS.RECORDS] = JSON.stringify(records);
+    getProjectStorage().setItem(STORAGE_KEYS.RECORDS, JSON.stringify(records));
   }, 800);
 }
 
 /** 立即保存（不清除防抖定时器） */
 export function saveNow(records) {
   clearTimeout(saveTimer);
-  localStorage[STORAGE_KEYS.RECORDS] = JSON.stringify(records);
+  getProjectStorage().setItem(STORAGE_KEYS.RECORDS, JSON.stringify(records));
 }
 
 // ===== Settings =====
@@ -62,13 +107,14 @@ export function saveNow(records) {
 export function saveSettings(settings) {
   const safeSettings = { ...(settings || {}) };
   SESSION_SECRET_IDS.forEach(id => delete safeSettings[id]);
-  localStorage[STORAGE_KEYS.SETTINGS] = JSON.stringify(safeSettings);
+  getProjectStorage().setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(safeSettings));
 }
 
 /** 加载设置 */
 export function loadSettings() {
   try {
-    const settings = JSON.parse(localStorage[STORAGE_KEYS.SETTINGS] || '{}');
+    const store = getProjectStorage();
+    const settings = JSON.parse(store.getItem(STORAGE_KEYS.SETTINGS) || '{}');
     if (!settings || typeof settings !== 'object') return {};
 
     // Migrate old releases that persisted API keys/email in localStorage.
@@ -83,7 +129,7 @@ export function loadSettings() {
     });
     if (migrated) {
       writeSessionSecrets(secrets);
-      localStorage[STORAGE_KEYS.SETTINGS] = JSON.stringify(settings);
+      store.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
     }
     return settings;
   } catch {
@@ -139,7 +185,7 @@ export function applySettings(settings) {
   const secrets = readSessionSecrets();
   SESSION_SECRET_IDS.forEach(id => {
     const el = document.getElementById(id);
-    if (el && typeof secrets[id] === 'string') el.value = secrets[id];
+    if (el) el.value = typeof secrets[id] === 'string' ? secrets[id] : '';
   });
 }
 

@@ -1,21 +1,22 @@
 // main.js — 应用入口。组装所有模块，编排启动流程。
 
 import { EventBus } from './event-bus.js?v=20260722b';
-import { AppState } from './state.js?v=20260820a';
+import { AppState } from './state.js?v=20260820b';
 import { Renderer } from './renderer.js?v=20260722b';
-import { UIManager } from './ui.js?v=20260818c';
-import { AuthService } from './auth.js?v=20260722b';
+import { UIManager } from './ui.js?v=20260820b';
+import { AuthService } from './auth.js?v=20260820b';
 import { QueryBuilder } from './query-builder.js?v=20260722b';
 import { ScoringEngine } from './scoring.js?v=20260801d';
-import { PrismaDiagram } from './prisma.js?v=20260722b';
-import { ApiFetcher } from './api-fetcher.js?v=20260820a';
+import { PrismaDiagram } from './prisma.js?v=20260820b';
+import { ApiFetcher } from './api-fetcher.js?v=20260820b';
 import { FileParser } from './parsers.js?v=20260723f';
 import { addRecords } from './dedup.js?v=20260722b';
 import { sourceLabelFor } from './record.js?v=20260722b';
 import { downloadBlob, getById as $ } from './utils.js?v=20260722b';
-import { getLicense } from './storage.js?v=20260818c';
-import { MetaAnalysisWorkspace } from './analysis-ui.js?v=20260818b';
-import { ReviewWorkflow } from './review-workflow.js?v=20260723o';
+import { getProjectStorage } from './storage.js?v=20260820b';
+import { MetaAnalysisWorkspace } from './analysis-ui.js?v=20260820b';
+import { ReviewWorkflow } from './review-workflow.js?v=20260820b';
+import { isTrialAllowedControl, shouldBlockTrialTarget } from './entitlement.js?v=20260820b';
 
 // ===== 1. Initialize Core =====
 const eventBus = new EventBus();
@@ -38,8 +39,10 @@ const reviewWorkflow = new ReviewWorkflow({
 const ui = new UIManager({ eventBus, authService, state, renderer });
 
 // ===== 3. Initialize API Fetcher =====
+let activeAccessMode = 'unauthenticated';
 const liveSearchAudits = new Map();
 const apiFetcher = new ApiFetcher({
+  canUsePremium: () => activeAccessMode === 'professional',
   onProgress({ current, total, label }) {
     ui.updateProgress(current, total, label);
   },
@@ -51,6 +54,69 @@ const apiFetcher = new ApiFetcher({
     ui.renderSearchAudit([...liveSearchAudits.values()]);
   }
 });
+
+const TRIAL_RESTRICTION_MESSAGE = '免费试用为演示沙盒，仅用于查看示例；激活专业版后可检索真实数据库、导入、编辑和导出。';
+let trialSandboxObserver = null;
+let accessNoticeTimer = null;
+
+function showAccessNotice(message) {
+  ui.setStatus(message);
+  let notice = document.getElementById('accessNotice');
+  if (!notice) {
+    notice = document.createElement('div');
+    notice.id = 'accessNotice';
+    notice.className = 'access-notice';
+    notice.setAttribute('role', 'status');
+    document.body.appendChild(notice);
+  }
+  notice.textContent = message;
+  notice.classList.add('is-visible');
+  clearTimeout(accessNoticeTimer);
+  accessNoticeTimer = setTimeout(() => notice.classList.remove('is-visible'), 3600);
+}
+
+function updateTrialSandboxUI() {
+  const trial = activeAccessMode === 'trial';
+  document.body.classList.toggle('trial-sandbox-mode', trial);
+  const banner = document.getElementById('trialSandboxBanner');
+  if (banner) banner.hidden = !trial;
+  const main = document.getElementById('mainApp');
+  if (!main) return;
+  main.inert = activeAccessMode === 'unauthenticated';
+
+  main.querySelectorAll('button, input, textarea, select').forEach(control => {
+    if (trial && !isTrialAllowedControl(control)) {
+      control.dataset.trialLocked = '1';
+      control.setAttribute('aria-disabled', 'true');
+      if (!control.matches('button')) control.disabled = true;
+    } else if (control.dataset.trialLocked === '1') {
+      delete control.dataset.trialLocked;
+      control.removeAttribute('aria-disabled');
+      if (!control.matches('button')) control.disabled = false;
+    }
+  });
+}
+
+function requireProfessional() {
+  if (activeAccessMode === 'professional') return true;
+  showAccessNotice(activeAccessMode === 'trial' ? TRIAL_RESTRICTION_MESSAGE : '请先登录并激活专业版。');
+  return false;
+}
+
+function guardRestrictedInteraction(event) {
+  if (activeAccessMode === 'professional') return;
+  const main = document.getElementById('mainApp');
+  const control = event.target?.closest?.('button, input, textarea, select');
+  if (!control || !main?.contains(control)) return;
+  if (activeAccessMode === 'trial' && !shouldBlockTrialTarget(event.target, main)) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  showAccessNotice(activeAccessMode === 'trial' ? TRIAL_RESTRICTION_MESSAGE : '请先登录并激活专业版。');
+}
+
+document.addEventListener('click', guardRestrictedInteraction, true);
+document.addEventListener('input', guardRestrictedInteraction, true);
+document.addEventListener('change', guardRestrictedInteraction, true);
 
 // ===== Commercial workspace routing: one task, one page =====
 const PAGE_ROUTES = [
@@ -152,7 +218,7 @@ function refreshProductUX() {
   const review = reviewWorkflow.exportState();
   const analysis = metaWorkspace.exportState();
   const records = state.records;
-  const isDemo = localStorage.getItem('meta_project_mode') === 'demo' || (records.length > 0 && records.every(r => r.importMethod === 'demo'));
+  const isDemo = getProjectStorage().getItem('meta_project_mode') === 'demo' || (records.length > 0 && records.every(r => r.importMethod === 'demo'));
   const finalCount = records.filter(r => r.decision === '最终纳入' || r.decision === '最终排除').length;
   const fullTextDecided = review.fullText.filter(row => row.status === 'included' || row.status === 'excluded').length;
   const protocol = review.protocol || {};
@@ -162,7 +228,7 @@ function refreshProductUX() {
     records.length > 0 && finalCount > 0,
     fullTextDecided > 0 && review.risk.length > 0,
     Boolean(metaWorkspace.getReportData()),
-    localStorage.getItem('meta_report_generated') === '1' || Boolean(document.querySelector('#reviewReportPreview h1'))
+    getProjectStorage().getItem('meta_report_generated') === '1' || Boolean(document.querySelector('#reviewReportPreview h1'))
   ];
   const completed = complete.filter(Boolean).length;
   const progress = Math.round(completed / complete.length * 100);
@@ -206,14 +272,15 @@ function scheduleProductUX() {
 }
 
 function handleNewProject() {
+  if (!requireProfessional()) return;
   const hasData = state.records.length || reviewWorkflow.exportState().protocol.reviewTitle || metaWorkspace.exportState().rows.length;
   if (hasData && !confirm('新建空白项目会清除当前项目内容。建议先点击“备份 JSON”。确定继续吗？')) return;
   state.setRecords([]);
   reviewWorkflow.importState({ protocol: {}, fullText: [], risk: [], grade: [] });
   metaWorkspace.importState({ rows: [], type: 'binary', measure: 'OR', model: 'random', outcome: '' });
-  localStorage.setItem('meta_project_mode', 'live');
-  localStorage.removeItem('meta_report_generated');
-  localStorage['meta_screener_prisma'] = '0';
+  getProjectStorage().setItem('meta_project_mode', 'live');
+  getProjectStorage().removeItem('meta_report_generated');
+  getProjectStorage().setItem('meta_screener_prisma', '0');
   state.markPrismaDirty(); state.saveNow(); renderer.render();
   ui.setStatus('已创建空白项目，请从研究方案开始。');
   refreshProductUX();
@@ -234,6 +301,7 @@ function saveCurrentSettings() {
 }
 
 async function handleFetchDatabases() {
+  if (!requireProfessional()) return;
   try {
     const chosenSources = [...document.querySelectorAll('.db-check:checked')].map(x => x.value);
     const cnChosen = [...document.querySelectorAll('.db-check-cn:checked')].map(x => x.value);
@@ -315,6 +383,7 @@ function handleFilterChange() {
 }
 
 async function handleImportFile(e) {
+  if (!requireProfessional()) { if (e?.target) e.target.value = ''; return; }
   const file = e.target.files[0];
   if (!file) return;
   const source = $('#manualSource')?.value || 'other';
@@ -332,6 +401,7 @@ async function handleImportFile(e) {
 }
 
 async function handleImportJSON(e) {
+  if (!requireProfessional()) { if (e?.target) e.target.value = ''; return; }
   const file = e.target.files[0];
   if (!file) return;
   try {
@@ -346,8 +416,8 @@ async function handleImportJSON(e) {
     state.markPrismaDirty();
     state.saveNow();
     renderer.render();
-    localStorage.setItem('meta_project_mode', 'live');
-    localStorage.removeItem('meta_report_generated');
+    getProjectStorage().setItem('meta_project_mode', 'live');
+    getProjectStorage().removeItem('meta_report_generated');
     refreshProductUX();
     ui.setStatus(`已导入 ${records.length} 条备份记录`);
   } catch (err) {
@@ -356,6 +426,7 @@ async function handleImportJSON(e) {
 }
 
 function handleExportCSV() {
+  if (!requireProfessional()) return;
   const head = ['结论', '分数', '研究类型', '主来源', '全部来源', 'PMID', 'DOI', '原因',
     '题名', '年份', '期刊', '作者', '命中词', '摘要'];
   const rows = [head, ...state.getStudyFilteredRecords().map(r => [
@@ -375,6 +446,7 @@ function handleExportCSV() {
 }
 
 function handleExportJSON() {
+  if (!requireProfessional()) return;
   const payload = {
     version: 'pro-3',
     exportedAt: new Date().toISOString(),
@@ -387,7 +459,7 @@ function handleExportJSON() {
 }
 
 function handleDemo() {
-  if (state.records.length && !confirm('载入完整示例项目会替换当前题录、质量评价和数据提取内容。建议先点击“备份 JSON”。确定继续吗？')) return;
+  if (state.records.length && !confirm('载入完整示例项目会替换当前项目内容。确定继续吗？')) return;
   const demoRecords = [
     { source: 'pubmed', pmid: '99999997', title: '【演示】Zhang 2018：IL-6 多态性与尘肺风险', year: '2018', journal: 'Occupational Medicine Demo', authors: 'Zhang; Li', abstract: '演示用病例对照研究。报告 IL-6 基因型、病例组与对照组人数，可计算比值比。', importMethod: 'demo' },
     { source: 'europepmc', pmid: '99999998', title: '【演示】Liu 2020：炎症因子与职业性尘肺易感性', year: '2020', journal: 'Respiratory Research Demo', authors: 'Liu; Wang', abstract: '演示用病例对照研究。研究成年人职业粉尘暴露人群，并报告主要结局数据。', importMethod: 'demo' },
@@ -450,22 +522,23 @@ function handleDemo() {
   metaWorkspace.updateIncludedCount();
   metaWorkspace.calculate();
   reviewWorkflow.buildReport();
-  localStorage.setItem('meta_project_mode', 'demo');
-  localStorage.setItem('meta_report_generated', '1');
+  getProjectStorage().setItem('meta_project_mode', 'demo');
+  getProjectStorage().setItem('meta_report_generated', '1');
   state.saveNow();
   refreshProductUX();
   ui.setStatus('已载入完整示例项目：方案、筛选、质量评价、数据提取、统计图和报告均已生成');
 }
 
 function handleClearAll() {
+  if (!requireProfessional()) return;
   if (confirm('确定清空所有题录？请先备份。')) {
     state.setRecords([]);
-    localStorage['meta_screener_prisma'] = '0';
+    getProjectStorage().setItem('meta_screener_prisma', '0');
     state.markPrismaDirty();
     state.saveNow();
     renderer.render();
-    localStorage.setItem('meta_project_mode', 'live');
-    localStorage.removeItem('meta_report_generated');
+    getProjectStorage().setItem('meta_project_mode', 'live');
+    getProjectStorage().removeItem('meta_report_generated');
     refreshProductUX();
     ui.setStatus('已清空');
   }
@@ -482,6 +555,11 @@ function handlePrismaNotRetrievedChange() {
 
 async function boot() {
   prepareCommercialLayout();
+  if (!trialSandboxObserver) {
+    trialSandboxObserver = new MutationObserver(() => updateTrialSandboxUI());
+    const main = document.getElementById('mainApp');
+    if (main) trialSandboxObserver.observe(main, { childList: true, subtree: true });
+  }
   try {
     metaWorkspace.init();
     reviewWorkflow.init();
@@ -493,6 +571,11 @@ async function boot() {
 
     // Check auth
     const result = await authService.checkAuth();
+    activeAccessMode = result.authenticated && result.mode === 'trial'
+      ? 'trial'
+      : result.authenticated
+        ? 'professional'
+        : 'unauthenticated';
 
     if (result.authenticated) {
       // Load data
@@ -507,8 +590,15 @@ async function boot() {
       // Render and switch to main app
       renderer.render();
       if (metaWorkspace.exportState().rows.length >= 2) metaWorkspace.calculate();
-      if (localStorage.getItem('meta_report_generated') === '1') reviewWorkflow.buildReport();
+      if (getProjectStorage().getItem('meta_report_generated') === '1') reviewWorkflow.buildReport();
       ui.hideAuth();
+      if (result.mode === 'trial') {
+        const blankProject = state.records.length === 0
+          && !reviewWorkflow.exportState().protocol.reviewTitle
+          && metaWorkspace.exportState().rows.length === 0;
+        if (blankProject) handleDemo();
+      }
+      updateTrialSandboxUI();
     } else if (result.mode === 'need-license') {
       // Logged in but no license bound
       ui.resetAuthUI();
@@ -550,7 +640,7 @@ async function boot() {
     onImportJSON: handleImportJSON,
     onExportCSV: handleExportCSV,
     onExportJSON: handleExportJSON,
-    onDemo: handleDemo,
+    onDemo: () => handleDemo(),
     onClearAll: handleClearAll,
     onExportPRISMASVG: () => PrismaDiagram.exportSVG(),
     onExportPRISMAPNG: () => PrismaDiagram.exportPNG(),
@@ -565,6 +655,14 @@ async function boot() {
     // Logout
     if (e.target.closest('#btnLogout')) {
       await authService.logout();
+      updateTrialSandboxUI();
+      ui.resetAuthUI();
+      ui.showAuth();
+      return;
+    }
+    if (e.target.closest('#btnTrialUpgrade')) {
+      await authService.logout();
+      updateTrialSandboxUI();
       ui.resetAuthUI();
       ui.showAuth();
       return;
@@ -592,14 +690,46 @@ async function boot() {
 
   // EventBus subscriptions
   eventBus.on('auth:changed', ({ state: authState }) => {
+    if (authState === 'trial') activeAccessMode = 'trial';
+    else if (authState === 'logged-out' || authState === 'unauthenticated') activeAccessMode = 'unauthenticated';
+    else if (['online', 'licensed', 'activated', 'license-bound'].includes(authState)) activeAccessMode = 'professional';
+    updateTrialSandboxUI();
     if (authState === 'logged-out') {
       return;
+    }
+    if (authState === 'trial') {
+      state.load();
+      state.applySettings(state.loadSettings());
+      metaWorkspace.reload();
+      reviewWorkflow.reload();
+      renderer.render();
+      const blankTrial = state.records.length === 0
+        && !reviewWorkflow.exportState().protocol.reviewTitle
+        && metaWorkspace.exportState().rows.length === 0;
+      if (blankTrial) handleDemo();
+      else {
+        if (metaWorkspace.exportState().rows.length >= 2) metaWorkspace.calculate();
+        if (getProjectStorage().getItem('meta_report_generated') === '1') reviewWorkflow.buildReport();
+      }
+      updateTrialSandboxUI();
+      refreshProductUX();
+      activateCommercialPage('#dashboard', { updateHistory: false, scroll: false });
+      return;
+    }
+    if (['online', 'licensed', 'activated', 'license-bound'].includes(authState)) {
+      state.load();
+      state.applySettings(state.loadSettings());
+      metaWorkspace.reload();
+      reviewWorkflow.reload();
+      renderer.render();
+      if (metaWorkspace.exportState().rows.length >= 2) metaWorkspace.calculate();
+      if (getProjectStorage().getItem('meta_report_generated') === '1') reviewWorkflow.buildReport();
     }
     setTimeout(() => {
       const blankProject = state.records.length === 0
         && !reviewWorkflow.exportState().protocol.reviewTitle
         && metaWorkspace.exportState().rows.length === 0;
-      if (authState === 'trial' && blankProject) handleDemo();
+      updateTrialSandboxUI();
       refreshProductUX();
       activateCommercialPage('#dashboard', { updateHistory: false, scroll: false });
     }, 0);
@@ -614,7 +744,7 @@ async function boot() {
 
   eventBus.on('records:changed', () => {
     metaWorkspace.updateIncludedCount();
-    localStorage.removeItem('meta_report_generated');
+    getProjectStorage().removeItem('meta_report_generated');
     scheduleProductUX();
   });
 
@@ -629,14 +759,18 @@ async function boot() {
     }
   }
   const invalidateGeneratedReport = () => {
-    localStorage.removeItem('meta_report_generated');
+    getProjectStorage().removeItem('meta_report_generated');
     scheduleProductUX();
   };
-  document.addEventListener('input', invalidateGeneratedReport);
-  document.addEventListener('change', invalidateGeneratedReport);
+  const invalidateForProjectEdit = event => {
+    if (event.target?.matches?.('#f, #fd, #fs, #ft')) return;
+    invalidateGeneratedReport();
+  };
+  document.addEventListener('input', invalidateForProjectEdit);
+  document.addEventListener('change', invalidateForProjectEdit);
   document.addEventListener('click', e => {
     if (e.target.closest('#btnBuildReport')) {
-      localStorage.setItem('meta_report_generated', '1');
+      getProjectStorage().setItem('meta_report_generated', '1');
       scheduleProductUX();
       return;
     }
@@ -657,6 +791,7 @@ async function boot() {
     activateCommercialPage(target, { updateHistory: false, scroll: false });
   });
   refreshProductUX();
+  updateTrialSandboxUI();
   const initialTarget = PAGE_ROUTES.some(route => route.target === location.hash) ? location.hash : '#dashboard';
   activateCommercialPage(initialTarget, { updateHistory: false, scroll: false });
 }

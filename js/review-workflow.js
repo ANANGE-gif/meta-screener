@@ -1,5 +1,7 @@
 // review-workflow.js — 研究方案、全文复筛、偏倚风险、GRADE 与报告。
 
+import { getProjectStorage } from './storage.js?v=20260820b';
+
 const STORAGE_KEY = 'meta_review_workflow_v1';
 
 const RISK_TOOLS = {
@@ -72,6 +74,16 @@ export class ReviewWorkflow {
     this.#renderGrade();
   }
 
+  reload() {
+    this.#load();
+    this.#applyProtocol();
+    this.#renderFullText();
+    this.#renderRisk();
+    this.#renderGrade();
+    const preview = document.getElementById('reviewReportPreview');
+    if (preview) preview.innerHTML = '<div class="meta-empty">生成报告后在这里预览研究方案、筛选结果、质量评价和 Meta 分析摘要。</div>';
+  }
+
   exportState() {
     this.#readProtocol();
     return structuredClone(this.#state);
@@ -90,13 +102,15 @@ export class ReviewWorkflow {
 
   #load() {
     try {
-      const value = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      const value = JSON.parse(getProjectStorage().getItem(STORAGE_KEY) || '{}');
       this.#state = { protocol: value.protocol || {}, fullText: value.fullText || [], risk: value.risk || [], grade: value.grade || [] };
-    } catch { /* 保留空状态 */ }
+    } catch {
+      this.#state = { protocol: {}, fullText: [], risk: [], grade: [] };
+    }
   }
 
   #save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.#state));
+    getProjectStorage().setItem(STORAGE_KEY, JSON.stringify(this.#state));
     const el = document.getElementById('protocolSaveState');
     if (el) { el.textContent = '已保存'; clearTimeout(this.#saveTimer); this.#saveTimer = setTimeout(() => { el.textContent = '自动保存'; }, 1300); }
   }

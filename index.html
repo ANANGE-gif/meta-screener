@@ -7,7 +7,7 @@
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://eutils.ncbi.nlm.nih.gov https://www.ebi.ac.uk https://api.crossref.org https://api.openalex.org https://jzzxkjwvwlwzmdymwjah.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; upgrade-insecure-requests">
 <title>MetaEvidence · Systematic Review Studio</title>
-<link rel="stylesheet" href="style.css?v=20260820a">
+<link rel="stylesheet" href="style.css?v=20260820b">
 </head>
 <body>
 
@@ -95,11 +95,11 @@
           <div id="registerError" class="auth-error"></div>
           <div class="auth-form-actions"><button type="submit" class="auth-btn-primary" id="registerBtn">创建专业版账号</button></div>
         </form>
-        <div class="auth-trial-link"><a href="#" id="lnkTrial">免费体验完整示例 <span>无需注册</span></a></div>
+        <div class="auth-trial-link"><a href="#" id="lnkTrial">免费试用完整流程 <span>无需注册</span></a></div>
         <div class="auth-offline-section">
-          <a href="#" class="auth-offline-link">已有离线授权码？在此激活</a>
+          <a href="#" class="auth-offline-link">已有专业版授权码？在此激活</a>
           <div id="offlineActivationBox" style="display:none;margin-top:10px">
-            <p class="auth-desc">首次激活需要联网验证，之后可离线使用。</p>
+            <p class="auth-desc">首次绑定及后续启动均需联网核验授权状态。</p>
             <div class="auth-input-wrap"><input type="text" id="licenseInput" placeholder="请输入授权码"></div>
             <div id="activateError" class="auth-error"></div>
             <button type="button" class="auth-btn-primary" id="btnOfflineActivate">验证并激活</button>
@@ -197,10 +197,10 @@
       <tr><td>授权方式</td><td>账号或激活码在线验证；检索数据仍保存在本机浏览器</td></tr></table>
 
       <h2 id="m-sec2">2. 激活与认证</h2>
-      <p>首次使用需要激活。提供三种方式：</p>
-      <div class="manual-step"><p><span class="manual-num">A</span><b>在线注册 + 激活码</b></p><p>点击「注册」选项卡，填写邮箱、密码和激活码。注册后检查邮箱确认链接，然后登录即可。激活码一码一人，由管理员分发。</p><p class="manual-tip">💡 在线模式支持跨设备数据同步。</p></div>
-      <div class="manual-step"><p><span class="manual-num">B</span><b>激活码授权</b></p><p>点击「使用激活码」，输入管理员提供的有效激活码；首次绑定需要连接授权服务器。</p><p class="manual-tip">💡 不再使用写在前端代码中的通用离线码，避免授权被任意绕过。</p></div>
-      <div class="manual-step"><p><span class="manual-num">C</span><b>试用模式</b></p><p>点击「先试用看看」，无需任何激活码。限制：每次检索最多返回 <b>15 条</b> 记录。</p></div>
+      <p>正式项目功能需要激活；免费试用无需激活。提供三种进入方式：</p>
+      <div class="manual-step"><p><span class="manual-num">A</span><b>在线注册 + 激活码</b></p><p>点击「注册」选项卡，填写邮箱、密码和激活码。注册后检查邮箱确认链接，然后登录即可。激活码一码一人，由管理员分发。</p><p class="manual-tip">💡 账号可跨设备登录；项目数据默认保存在本机，换设备请用 JSON 备份迁移。</p></div>
+      <div class="manual-step"><p><span class="manual-num">B</span><b>激活码授权</b></p><p>输入管理员提供的有效激活码；首次绑定及后续启动均需连接授权服务器核验。</p><p class="manual-tip">💡 不再使用写在前端代码中的通用离线码，避免授权被任意绕过。</p></div>
+      <div class="manual-step"><p><span class="manual-num">C</span><b>免费试用（演示沙盒）</b></p><p>无需激活码即可查看完整示例项目、流程、统计结果和图表。真实数据库检索、个人项目导入与编辑、成果导出需激活专业版。</p></div>
       <p class="manual-warn">⚠️ 清除浏览器数据会导致激活状态丢失。建议定期导出数据备份。</p>
 
       <h2 id="m-sec3">3. 工作区概览</h2>
@@ -252,7 +252,7 @@
 
       <h2 id="m-sec9">9. 高级配置</h2>
       <h3>9.1 评分调参</h3>
-      <table><tr><th>参数</th><th>默认值</th><th>作用</th></tr><tr><td>入围阈值 (IncCut)</td><td>3</td><td>评分 ≥ 此值 → 建议纳入</td></tr><tr><td>排除阈值 (ExcCut)</td><td>-3</td><td>评分 ≤ 此值 → 建议排除</td></tr><tr><td>标题乘数</td><td>3</td><td>标题命中关键词的权重倍率</td></tr><tr><td>协同加分</td><td>1</td><td>P+E 同时出现额外加分</td></tr><tr><td>排除罚分</td><td>-2</td><td>命中排除词时的罚分</td></tr></table>
+      <table><tr><th>参数</th><th>默认值</th><th>作用</th></tr><tr><td>入围阈值 (IncCut)</td><td>4</td><td>评分 ≥ 此值 → 建议纳入</td></tr><tr><td>排除阈值 (ExcCut)</td><td>-2</td><td>评分 ≤ 此值 → 建议排除</td></tr><tr><td>标题乘数</td><td>2</td><td>标题命中关键词的权重倍率</td></tr><tr><td>协同加分</td><td>2</td><td>同时命中至少 3 组检索词时额外加分</td></tr><tr><td>排除词连续惩罚</td><td>-1</td><td>每多命中 1 个排除词的额外扣分</td></tr></table>
       <h3>9.2 备份与恢复</h3>
       <ol><li>导出 JSON → 保存到安全位置</li><li>需要恢复时 → 导入该 JSON 文件</li><li>新设备上导入 JSON + 重新激活即可继续工作</li></ol>
 
@@ -288,6 +288,11 @@
     <button id="btnAbout">数据与版本</button>
     <button id="btnLogout" class="account-button">退出</button>
   </div>
+</div>
+
+<div id="trialSandboxBanner" class="trial-sandbox-banner" hidden role="status">
+  <div><b>免费试用 · 演示沙盒</b><span>可浏览完整示例流程；真实检索、导入、编辑和导出需激活专业版。</span></div>
+  <button type="button" id="btnTrialUpgrade">激活专业版</button>
 </div>
 
 <section class="product-home" id="projectHome">
@@ -425,7 +430,7 @@ cohort
 cross-sectional; observational study</textarea></div>
   <div><label for="yf">年份起</label><input id="yf" placeholder="如 1990" value="1990"></div>
   <div><label for="yt">年份止</label><input id="yt" placeholder="如 2026" value="2026"></div>
-  <div><label for="max">目标获取数量（0=单库安全上限 10,000；试用模式每库最多 15 条）</label><input id="max" type="number" value="200" min="0" max="10000"></div>
+  <div><label for="max">目标获取数量（0=单库安全上限 10,000）</label><input id="max" type="number" value="200" min="0" max="10000"></div>
   <div><label for="sort">排序</label><select id="sort"><option value="relevance">相关性</option><option value="pub date">发表时间</option></select></div>
 </div>
 
@@ -687,6 +692,6 @@ conference abstract</textarea></div>
 
 </div><!-- /mainApp -->
 
-<script type="module" src="js/main.js?v=20260820a"></script>
+<script type="module" src="js/main.js?v=20260820b"></script>
 </body>
 </html>

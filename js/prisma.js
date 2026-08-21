@@ -3,6 +3,7 @@
 import { PRISMA } from './config.js?v=20260722b';
 import { esc } from './utils.js?v=20260722b';
 import { sourceLabelFor } from './record.js?v=20260722b';
+import { getProjectStorage } from './storage.js?v=20260820b';
 
 export class PrismaDiagram {
   /**
@@ -27,7 +28,7 @@ export class PrismaDiagram {
       const v = parseInt(el.value || '0', 10);
       return isNaN(v) || v < 0 ? 0 : v;
     }
-    const stored = parseInt(localStorage['meta_screener_prisma'] || '0', 10);
+    const stored = parseInt(getProjectStorage().getItem('meta_screener_prisma') || '0', 10);
     return isNaN(stored) || stored < 0 ? 0 : stored;
   }
 
@@ -36,7 +37,7 @@ export class PrismaDiagram {
    */
   static setNotRetrieved(value) {
     const v = Math.max(0, value || 0);
-    localStorage['meta_screener_prisma'] = String(v);
+    getProjectStorage().setItem('meta_screener_prisma', String(v));
     const el = document.getElementById('prismaNotRetrieved');
     if (el) el.value = v;
   }

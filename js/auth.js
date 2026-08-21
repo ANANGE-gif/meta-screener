@@ -3,7 +3,7 @@
 import { SUPABASE } from './config.js?v=20260722b';
 import { STORAGE_KEYS } from './config.js?v=20260722b';
 import { fetchWithTimeout } from './utils.js?v=20260722b';
-import { getDeviceId, getStoredAuth, setStoredAuth, clearAuth as clearStoredAuth, getLicense, setLicense, clearLicense, getOfflineUsedCodes, setOfflineUsedCode } from './storage.js?v=20260722b';
+import { getDeviceId, getStoredAuth, setStoredAuth, clearAuth as clearStoredAuth, clearSessionSecrets, getLicense, setLicense, clearLicense, getOfflineUsedCodes, setOfflineUsedCode } from './storage.js?v=20260820b';
 
 export class AuthService {
   #eventBus;
@@ -125,7 +125,7 @@ export class AuthService {
       this.restUrl('/licenses?device_id=eq.') + encodeURIComponent(userId) + '&order=activated_at.desc&limit=1',
       { headers: this.supabaseHeaders() }, 5000
     );
-    if (!res.ok) return null;
+    if (!res.ok) throw new Error('授权服务器错误');
     const rows = await res.json();
     return rows.length ? rows[0] : null;
   }
@@ -169,12 +169,19 @@ export class AuthService {
         expires_at: Date.now() + (data.expires_in || 3600) * 1000
       };
       setStoredAuth(session);
+      clearLicense();
 
       // 检查绑定的激活码
       const licRow = await this.queryLicenseByUserId(data.user.id);
-      if (licRow) setLicense(licRow.code);
+      const hasBoundLicense = Boolean(licRow?.used && licRow.device_id === data.user.id && licRow.code);
+      if (hasBoundLicense) {
+        setLicense(licRow.code);
+        this.#eventBus?.emit('auth:changed', { state: 'online', user: data.user });
+      } else {
+        clearLicense();
+      }
 
-      return { success: true, session, hasLicense: !!getLicense() };
+      return { success: true, session, hasLicense: hasBoundLicense };
     } catch (err) {
       if (err.message === '连接超时') return { error: '连接超时（>10秒），请检查网络或刷新重试' };
       if (err.message?.includes('Failed to fetch')) return { error: '无法连接到服务器，请检查是否需要代理/VPN' };
@@ -219,9 +226,6 @@ export class AuthService {
         return { error: '激活失败，请稍后重试' };
       }
 
-      setLicense(licenseCode);
-      setOfflineUsedCode(licenseCode, userId);
-
       // 如果 Supabase 关闭了邮箱确认，直接登录
       if (data.access_token) {
         setStoredAuth({
@@ -230,9 +234,13 @@ export class AuthService {
           user: data.user,
           expires_at: Date.now() + (data.expires_in || 3600) * 1000
         });
+        setLicense(licenseCode);
+        setOfflineUsedCode(licenseCode, userId);
+        this.#eventBus?.emit('auth:changed', { state: 'online', user: data.user });
         return { success: true, autoLogin: true };
       }
 
+      clearLicense();
       return { success: true, needEmailConfirm: true };
     } catch (err) {
       if (err.message === '连接超时') return { error: '连接超时（>10秒），请刷新重试' };
@@ -245,14 +253,17 @@ export class AuthService {
 
   async logout() {
     const session = getStoredAuth();
-    if (session && session.access_token) {
-      try {
-        await fetch(this.authUrl('/logout'), { method: 'POST', headers: this.authHeaders(session.access_token) });
-      } catch { /* 静默 */ }
-    }
     clearStoredAuth();
     clearLicense();
+    clearSessionSecrets();
     this.#eventBus?.emit('auth:changed', { state: 'logged-out' });
+    if (session && session.access_token) {
+      void fetchWithTimeout(
+        this.authUrl('/logout'),
+        { method: 'POST', headers: this.authHeaders(session.access_token) },
+        4000
+      ).catch(() => {});
+    }
   }
 
   // ===== License-code activation =====
@@ -304,7 +315,7 @@ export class AuthService {
   // ===== Boot Check =====
 
   async checkAuth() {
-    // 试用模式
+    // 免费试用（演示沙盒）
     if (this.isTrial()) {
       this.#eventBus?.emit('auth:changed', { state: 'trial' });
       return { authenticated: true, mode: 'trial' };
@@ -333,12 +344,19 @@ export class AuthService {
     if (hasSession) {
       const current = await this.getCurrentUser();
       if (current && current.user) {
-        if (lic) {
-          this.verifyLicenseInBackground(lic, current.user.id);
-          this.#eventBus?.emit('auth:changed', { state: 'online', user: current.user });
-          return { authenticated: true, mode: 'online', user: current.user };
-        } else {
+        try {
+          const row = lic
+            ? await this.queryLicenseFromSupabase(lic)
+            : await this.queryLicenseByUserId(current.user.id);
+          if (row && row.used && row.device_id === current.user.id) {
+            if (row.code) setLicense(row.code);
+            this.#eventBus?.emit('auth:changed', { state: 'online', user: current.user });
+            return { authenticated: true, mode: 'online', user: current.user };
+          }
+          clearLicense();
           return { authenticated: false, mode: 'need-license', user: current.user };
+        } catch {
+          return { authenticated: false, mode: 'license-server-unavailable', user: current.user };
         }
       }
       clearStoredAuth();
