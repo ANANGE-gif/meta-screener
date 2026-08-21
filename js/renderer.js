@@ -3,7 +3,7 @@
 import { SOURCE_META, STUDY_TYPE_MAP, DEFAULT_PAGE_SIZE } from './config.js?v=20260722b';
 import { esc, escAttr, escapeRegExp } from './utils.js?v=20260722b';
 import { sourceLabelFor, sourceInfo } from './record.js?v=20260722b';
-import { PrismaDiagram } from './prisma.js?v=20260722b';
+import { PrismaDiagram } from './prisma.js?v=20260820c';
 
 export class Renderer {
   #state;

@@ -2,12 +2,12 @@
 
 import { EventBus } from './event-bus.js?v=20260722b';
 import { AppState } from './state.js?v=20260820b';
-import { Renderer } from './renderer.js?v=20260722b';
+import { Renderer } from './renderer.js?v=20260820c';
 import { UIManager } from './ui.js?v=20260820b';
 import { AuthService } from './auth.js?v=20260820b';
 import { QueryBuilder } from './query-builder.js?v=20260722b';
 import { ScoringEngine } from './scoring.js?v=20260801d';
-import { PrismaDiagram } from './prisma.js?v=20260820b';
+import { PrismaDiagram } from './prisma.js?v=20260820c';
 import { ApiFetcher } from './api-fetcher.js?v=20260820b';
 import { FileParser } from './parsers.js?v=20260723f';
 import { addRecords } from './dedup.js?v=20260722b';
